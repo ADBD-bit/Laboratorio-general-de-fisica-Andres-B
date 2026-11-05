@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorios de Física - Andrés Bohórquez | UCV</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ucv: {
+                            blue: '#002855',
+                            accent: '#0A3B75',
+                            gold: '#D4AF37',
+                            goldHover: '#B5952B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- KaTeX for formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 40, 85, 0.2);
+            border-radius: 4px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row transition-colors duration-200">
+
+    <!-- SIDEBAR DE NAVEGACIÓN -->
+    <aside id="sidebar" class="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-auto md:h-screen md:sticky md:top-0 z-30 shadow-sm transition-all duration-300">
+        <!-- Encabezado Institucional -->
+        <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-xl bg-ucv-blue text-ucv-gold flex items-center justify-center font-bold text-xl shadow-md border border-ucv-gold/30">
+                    UCV
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight text-ucv-blue dark:text-slate-100 uppercase">Facultad de Ingeniería</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Universidad Central de Venezuela</p>
+                </div>
+            </div>
+            <!-- Botón Dark Mode -->
+            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-ucv-gold transition">
+                <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Tarjeta de Estudiante -->
+        <div class="px-5 py-3 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-full bg-ucv-accent/10 dark:bg-ucv-accent/40 text-ucv-accent dark:text-ucv-gold flex items-center justify-center font-semibold text-xs border border-ucv-gold/20">
+                    AB
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Andrés Bohórquez</div>
+                    <div class="text-[11px] text-slate-400">Escuela de Ingeniería Eléctrica</div>
+                </div>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                Física Experimental
+            </span>
+        </div>
+
+        <!-- Buscador Rápido -->
+        <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                <input type="text" id="searchInput" oninput="filterLabs()" placeholder="Buscar laboratorio, tema, ley..." 
+                    class="w-full pl-9 pr-3 py-2 text-xs bg-slate-100 dark:bg-slate-800 rounded-lg border-transparent focus:border-ucv-blue dark:focus:border-ucv-gold focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition">
+            </div>
+        </div>
+
+        <!-- Menú de Enlaces Jerárquico -->
+        <nav class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar" id="navList">
+            <button onclick="navigate('home')" id="nav-btn-home" class="nav-item active flex items-center w-full px-3 py-2.5 text-xs font-semibold rounded-lg text-left transition">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 mr-2.5 text-ucv-gold"></i>
+                <span>Panel Principal (Dashboard)</span>
+            </button>
+
+            <div class="pt-3 pb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Prácticas de Laboratorio
+            </div>
+
+            <!-- Laboratorios generados según los archivos reales -->
+            <div id="labsNavGroup" class="space-y-0.5">
+                <!-- Se llena dinámicamente con JS -->
+            </div>
+
+            <div class="pt-3 pb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Recursos y Anexos
+            </div>
+            <button onclick="navigate('anexos')" id="nav-btn-anexos" class="nav-item flex items-center w-full px-3 py-2.5 text-xs font-semibold rounded-lg text-left transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i data-lucide="folder-archive" class="w-4 h-4 mr-2.5 text-amber-500"></i>
+                <span>Anexos y Hojas de Datos</span>
+            </button>
+            <button onclick="navigate('simuladores')" id="nav-btn-simuladores" class="nav-item flex items-center w-full px-3 py-2.5 text-xs font-semibold rounded-lg text-left transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i data-lucide="cpu" class="w-4 h-4 mr-2.5 text-indigo-500"></i>
+                <span>Laboratorio Virtual (Simuladores)</span>
+            </button>
+        </nav>
+
+        <!-- Footer Sidebar -->
+        <div class="p-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 text-center flex items-center justify-between">
+            <span>Repositorio Académico</span>
+            <span class="font-mono text-ucv-gold font-bold">2026</span>
+        </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto h-screen p-5 md:p-8 bg-slate-50 dark:bg-slate-950 custom-scrollbar">
+        
+        <!-- VISTA: HOME / DASHBOARD -->
+        <section id="view-home" class="view-section space-y-6 max-w-6xl mx-auto">
+            <!-- Hero Banner UCV -->
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-ucv-blue to-ucv-accent text-white p-6 md:p-8 shadow-lg border border-ucv-gold/30">
+                <div class="relative z-10 max-w-3xl space-y-3">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-medium text-ucv-gold border border-ucv-gold/40">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Portal Web Oficial de Informes y Simulaciones</span>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Física Experimental y Mediciones</h2>
+                    <p class="text-slate-200 text-xs md:text-sm leading-relaxed">
+                        Repositorio digital estructurado de la Facultad de Ingeniería de la Universidad Central de Venezuela. Incluye informes técnicos en formato PDF, análisis de incertidumbre, registros fotográficos y simuladores interactivos de cinemática, dinámica y termodinámica.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4 text-xs text-slate-300">
+                        <div class="flex items-center space-x-1.5"><i data-lucide="user" class="w-4 h-4 text-ucv-gold"></i><span><strong>Autor:</strong> Andrés Bohórquez</span></div>
+                        <div class="flex items-center space-x-1.5"><i data-lucide="graduation-cap" class="w-4 h-4 text-ucv-gold"></i><span>Facultad de Ingeniería - UCV</span></div>
+                        <div class="flex items-center space-x-1.5"><i data-lucide="file-check" class="w-4 h-4 text-ucv-gold"></i><span>13 Módulos de Laboratorio</span></div>
+                    </div>
+                </div>
+                <!-- Decoración geométrica institucional -->
+                <div class="absolute -right-10 -bottom-10 w-60 h-60 rounded-full bg-ucv-gold/10 blur-2xl pointer-events-none"></div>
+                <div class="absolute right-4 top-4 text-white/5 font-black text-8xl select-none">UCV</div>
+            </div>
+
+            <!-- Accesos Rápidos a Laboratorios (Grid interactivo) -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-slate-800 dark:text-slate-200 flex items-center">
+                        <i data-lucide="folder-git-2" class="w-4 h-4 mr-2 text-ucv-blue dark:text-ucv-gold"></i>
+                        Catálogo de Laboratorios Documentados
+                    </h3>
+                    <span class="text-xs text-slate-400">Total: 13 prácticas</span>
+                </div>
+
+                <div id="labsDashboardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Tarjetas inyectadas por JS -->
+                </div>
+            </div>
+
+            <!-- Anexo Destacado -->
+            <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+                        <i data-lucide="archive" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">Carpeta de Anexos de Archivos</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Hojas de datos experimentales, cálculos en hojas de cálculo y registros complementarios.</p>
+                    </div>
+                </div>
+                <button onclick="navigate('anexos')" class="px-4 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition whitespace-nowrap">
+                    Explorar Anexos &rarr;
+                </button>
+            </div>
+        </section>
+
+        <!-- VISTA DINÁMICA DE LABORATORIO INDIVIDUAL -->
+        <section id="view-lab" class="view-section hidden space-y-6 max-w-6xl mx-auto">
+            <!-- Barra Superior de Navegación del Lab -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                    <button onclick="navigate('home')" class="text-xs font-medium text-slate-400 hover:text-ucv-blue dark:hover:text-ucv-gold flex items-center mb-1">
+                        &larr; Volver al Panel Principal
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <span id="labBadgeNumber" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-ucv-blue text-ucv-gold">Lab X</span>
+                        <h2 id="labTitle" class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">Título de Laboratorio</h2>
+                    </div>
+                </div>
+                <!-- Pestañas internas del Laboratorio -->
+                <div class="flex items-center bg-slate-200/70 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+                    <button onclick="setLabTab('pdf')" id="tab-btn-pdf" class="lab-tab-btn active px-3.5 py-1.5 rounded-lg transition">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 inline mr-1.5"></i>Informe PDF
+                    </button>
+                    <button onclick="setLabTab('simulacion')" id="tab-btn-simulacion" class="lab-tab-btn px-3.5 py-1.5 rounded-lg transition">
+                        <i data-lucide="play-circle" class="w-3.5 h-3.5 inline mr-1.5"></i>Simulador
+                    </button>
+                    <button onclick="setLabTab('datos')" id="tab-btn-datos" class="lab-tab-btn px-3.5 py-1.5 rounded-lg transition">
+                        <i data-lucide="table" class="w-3.5 h-3.5 inline mr-1.5"></i>Datos & Fórmulas
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTENIDO PESTAÑA 1: VISOR DE PDF -->
+            <div id="lab-tab-content-pdf" class="space-y-4">
+                <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3 text-xs text-slate-600 dark:text-slate-300">
+                        <i data-lucide="file-check-2" class="w-5 h-5 text-red-500"></i>
+                        <div>
+                            <span class="font-bold block text-slate-900 dark:text-slate-100" id="pdfFileNameDisplay">archivo.pdf</span>
+                            <span class="text-[11px] text-slate-400" id="pdfFileSizeDisplay">Tamaño aproximado</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <!-- Input para cargar el PDF local si no se usa servidor local -->
+                        <label class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center">
+                            <i data-lucide="upload" class="w-3.5 h-3.5 mr-1.5"></i>
+                            Cargar PDF Local
+                            <input type="file" id="localPdfInput" accept="application/pdf" class="hidden" onchange="handleLocalPdfUpload(event)">
+                        </label>
+                        <!-- Enlace para abrir directo -->
+                        <a id="btnOpenNewTab" href="#" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-ucv-blue text-white hover:bg-ucv-accent transition flex items-center">
+                            <i data-lucide="external-link" class="w-3.5 h-3.5 mr-1.5"></i>
+                            Abrir en Pestaña
+                        </a>
+                        <a id="btnDownloadPdf" href="#" download class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-ucv-gold hover:bg-ucv-goldHover text-slate-950 transition flex items-center">
+                            <i data-lucide="download" class="w-3.5 h-3.5 mr-1.5"></i>
+                            Descargar
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contenedor del Visor -->
+                <div class="w-full bg-slate-200 dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-800 overflow-hidden shadow-inner h-[680px] relative">
+                    <iframe id="pdfViewerFrame" src="" class="w-full h-full border-0"></iframe>
+                    <div id="pdfFallbackNotice" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-sm hidden">
+                        <i data-lucide="file-question" class="w-12 h-12 text-slate-400 mb-2"></i>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">El navegador no puede previsualizar la ruta local directa</h4>
+                        <p class="text-xs text-slate-500 max-w-md mt-1 mb-4">
+                            Por seguridad del navegador al abrir archivos HTML directamente desde el disco (`file://`), usa el botón <strong>"Cargar PDF Local"</strong> arriba para seleccionar tu archivo o usa los botones de descarga/apertura.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO PESTAÑA 2: SIMULADOR INTERACTIVO -->
+            <div id="lab-tab-content-simulacion" class="hidden space-y-4">
+                <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-slate-200" id="simTitle">Simulación Física Virtual</h3>
+                            <p class="text-xs text-slate-500" id="simDesc">Herramienta gráfica interactiva desarrollada para contrastar datos teóricos y experimentales.</p>
+                        </div>
+                        <span class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                            Simulación Activa
+                        </span>
+                    </div>
+
+                    <!-- Canvas Interactivo -->
+                    <div class="relative w-full h-80 bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+                        <canvas id="physicsCanvas" width="800" height="320" class="w-full h-full"></canvas>
+                    </div>
+
+                    <!-- Controles del simulador -->
+                    <div id="simControls" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <!-- Generado por JS según el laboratorio -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO PESTAÑA 3: DATOS Y FÓRMULAS -->
+            <div id="lab-tab-content-datos" class="hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-ucv-blue dark:text-ucv-gold mb-3 flex items-center">
+                            <i data-lucide="function-square" class="w-4 h-4 mr-2"></i> Marco Matemático y Fórmulas
+                        </h4>
+                        <div id="labFormulasContainer" class="space-y-3 text-xs text-slate-600 dark:text-slate-300">
+                            <!-- Fórmulas KaTeX -->
+                        </div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-ucv-blue dark:text-ucv-gold mb-3 flex items-center">
+                            <i data-lucide="clipboard-list" class="w-4 h-4 mr-2"></i> Registro de Variables & Discrepancias
+                        </h4>
+                        <div id="labMetricsContainer" class="space-y-2 text-xs">
+                            <!-- Métricas de error -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: ANEXOS Y ARCHIVOS -->
+        <section id="view-anexos" class="view-section hidden space-y-6 max-w-6xl mx-auto">
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 rounded-xl bg-amber-500/10 text-amber-500">
+                        <i data-lucide="folder-archive" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">Carpeta: Anexos de Archivos</h2>
+                        <p class="text-xs text-slate-500">Documentos complementarios, tablas de datos crudos y evidencias fotográficas.</p>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-slate-100 dark:divide-slate-800 border-t border-b border-slate-100 dark:border-slate-800">
+                    <div class="py-3 flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-3">
+                            <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-500"></i>
+                            <div>
+                                <span class="font-bold block text-slate-800 dark:text-slate-200">Informe 2 Word Andres B.pdf</span>
+                                <span class="text-slate-400 text-[11px]">314 KB &bull; Documento complementario</span>
+                            </div>
+                        </div>
+                        <a href="Informe 2 Word Andres B.pdf" download class="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded font-semibold text-slate-700 dark:text-slate-300">Descargar</a>
+                    </div>
+                    <div class="py-3 flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-3">
+                            <i data-lucide="image" class="w-5 h-5 text-blue-500"></i>
+                            <div>
+                                <span class="font-bold block text-slate-800 dark:text-slate-200">Laboratorios hasta ese momento (hasta el 9).jpg</span>
+                                <span class="text-slate-400 text-[11px]">98 KB &bull; Registro gráfico de montajes</span>
+                            </div>
+                        </div>
+                        <a href="Laboratorios hasta ese momento (hasta el 9).jpg" target="_blank" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded font-semibold text-slate-700 dark:text-slate-300">Ver imagen</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA: SIMULADORES DESTACADOS -->
+        <section id="view-simuladores" class="view-section hidden space-y-6 max-w-6xl mx-auto">
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center">
+                    <i data-lucide="cpu" class="w-6 h-6 mr-2 text-indigo-500"></i> Laboratorio Virtual de Física
+                </h2>
+                <p class="text-xs text-slate-500">
+                    Selecciona una simulación física interactiva para experimentar con parámetros como ángulo, constante de restitución, aceleración gravitatoria y coeficiente de roce.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                    <button onclick="openLab('lab-1', 'simulacion')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-ucv-blue text-left transition bg-slate-50 dark:bg-slate-800/50">
+                        <div class="text-xs font-bold text-ucv-blue dark:text-ucv-gold mb-1">Práctica 1</div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">Caída Libre & Gravedad en Caracas</h4>
+                        <p class="text-xs text-slate-400">Verifica la aceleración local g = 9.78 m/s² frente al modelo estándar.</p>
+                    </button>
+                    <button onclick="openLab('lab-3', 'simulacion')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-ucv-blue text-left transition bg-slate-50 dark:bg-slate-800/50">
+                        <div class="text-xs font-bold text-ucv-blue dark:text-ucv-gold mb-1">Práctica 3</div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">Lanzamiento Parabólico</h4>
+                        <p class="text-xs text-slate-400">Descomposición vectorial de velocidad inicial y ángulo de elevación.</p>
+                    </button>
+                    <button onclick="openLab('lab-12', 'simulacion')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-ucv-blue text-left transition bg-slate-50 dark:bg-slate-800/50">
+                        <div class="text-xs font-bold text-ucv-blue dark:text-ucv-gold mb-1">Práctica 12</div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">Ley de Hooke & Resortes</h4>
+                        <p class="text-xs text-slate-400">Comportamiento elástico y amortiguamiento armónico simple.</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BASE DE DATOS LOCAL DE LABORATORIOS -->
+    <script>
+        const LABS_DATA = [
+            {
+                id: 'lab-1',
+                code: 'Lab 1',
+                title: 'Cálculo de la aceleración de la gravedad',
+                file: 'Lab 1 Calculo de la aceleración de la gravedad Andres B.pdf',
+                size: '399 KB',
+                category: 'Cinemática',
+                desc: 'Determinación experimental de la aceleración de caída libre g en Caracas mediante cronometraje de intervalos y ajuste cuadrático.',
+                formulas: [
+                    'y(t) = y_0 + v_0 t - \frac{1}{2} g t^2',
+                    'g_{exp} = \frac{2h}{t^2} \implies g_{Caracas} \approx 9.78 \text{ m/s}^2'
+                ],
+                metrics: [
+                    { label: 'Valor Teórico Estándar', val: '9.80665 m/s²' },
+                    { label: 'Valor Local Caracas', val: '9.780 m/s²' },
+                    { label: 'Error Porcentual Estimado', val: '0.85 %' }
+                ],
+                simType: 'freefall'
+            },
+            {
+                id: 'lab-2-1',
+                code: 'Lab 2.1',
+                title: 'Teoría de errores e incertidumbre',
+                file: 'Lab 2.1 Teoria de errores e incertidumbre Andrés B.pdf',
+                size: '141 KB',
+                category: 'Metrología',
+                desc: 'Tratamiento estadístico de datos directos e indirectos, propagación de incertidumbres y cálculo de desviación típica.',
+                formulas: [
+                    '\bar{x} = \frac{1}{N} \sum_{i=1}^N x_i',
+                    '\sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{N - 1}}, \quad \Delta f = \sqrt{\sum \left(\frac{\partial f}{\partial x_i} \Delta x_i\right)^2}'
+                ],
+                metrics: [
+                    { label: 'Nivel de Confianza', val: '95% (2σ)' },
+                    { label: 'Instrumento Principal', val: 'Cronómetro & Regla Milimetrada' }
+                ],
+                simType: 'error_propagation'
+            },
+            {
+                id: 'lab-2-2',
+                code: 'Lab 2.2',
+                title: 'Mediciones e Instrumentación',
+                file: 'Lab 2.2 Mediciones Andrés B.pdf',
+                size: '202 KB',
+                category: 'Metrología',
+                desc: 'Uso de vernier, micrómetro (tornillo micrométrico) y balanza de tres brazos. Apreciación y calibración de instrumentos.',
+                formulas: [
+                    '\text{Apreciación Vernier} = \frac{\text{Lectura Mínima Regla}}{\text{Divisiones Nonio}}',
+                    'V = \pi r^2 h \implies \frac{\Delta V}{V} = 2\frac{\Delta r}{r} + \frac{\Delta h}{h}'
+                ],
+                metrics: [
+                    { label: 'Apreciación Calibrador Vernier', val: '0.05 mm' },
+                    { label: 'Apreciación Micrómetro', val: '0.01 mm' }
+                ],
+                simType: 'vernier'
+            },
+            {
+                id: 'lab-3',
+                code: 'Lab 3',
+                title: 'Lanzamiento Parabólico',
+                file: 'Lab 3 Lanzamiento Parabólico Andrés B.pdf',
+                size: '241 KB',
+                category: 'Cinemática',
+                desc: 'Movimiento bidimensional con velocidad horizontal constante y aceleración vertical gravitacional.',
+                formulas: [
+                    'x(t) = v_0 \cos(\theta) t',
+                    'y(t) = v_0 \sin(\theta) t - \frac{1}{2} g t^2',
+                    'R_{max} = \frac{v_0^2 \sin(2\theta)}{g}'
+                ],
+                metrics: [
+                    { label: 'Ángulo de Máximo Alcance', val: '45°' },
+                    { label: 'Velocidad de Disparo Promedio', val: '4.32 m/s' }
+                ],
+                simType: 'projectile'
+            },
+            {
+                id: 'lab-4',
+                code: 'Lab 4',
+                title: 'Lanzamiento Horizontal',
+                file: 'Lab 4 Lanzamiento horizontal Andrés B.pdf',
+                size: '203 KB',
+                category: 'Cinemática',
+                desc: 'Estudio de trayectoria con ángulo inicial cero (θ = 0) desde una altura determinada del banco de pruebas.',
+                formulas: [
+                    't_{vuelo} = \sqrt{\frac{2h}{g}}',
+                    'x = v_0 \sqrt{\frac{2h}{g}}'
+                ],
+                metrics: [
+                    { label: 'Altura de la Mesa', val: '0.85 m' },
+                    { label: 'Tiempo de Vuelo Teórico', val: '0.417 s' }
+                ],
+                simType: 'projectile'
+            },
+            {
+                id: 'lab-5',
+                code: 'Lab 5',
+                title: 'Equilibrio de Fuerzas',
+                file: 'Lab 5 Equilibrio de Fuerzas Andres B.pdf',
+                size: '13.7 MB',
+                category: 'Estática',
+                desc: 'Mesa de fuerzas concurrentes. Primera condición de equilibrio y método del polígono de vectores.',
+                formulas: [
+                    '\sum \vec{F} = \vec{0} \implies \sum F_x = 0, \; \sum F_y = 0',
+                    '\vec{F}_E = - (\vec{F}_1 + \vec{F}_2)'
+                ],
+                metrics: [
+                    { label: 'Condición Evaluada', val: 'Equilibrio Traslacional' },
+                    { label: 'Discrepancia Angular', val: '< 1.5°' }
+                ],
+                simType: 'forces'
+            },
+            {
+                id: 'lab-6',
+                code: 'Lab 6',
+                title: 'Ley de Enfriamiento de Newton',
+                file: 'Lab 6 Ley enfriamiento de Newton Andres B.pdf',
+                size: '6.3 MB',
+                category: 'Termodinámica',
+                desc: 'Tasa de pérdida de calor de un cuerpo proporcional a la diferencia de temperatura entre el cuerpo y el medio ambiente.',
+                formulas: [
+                    '\frac{dT}{dt} = -k(T - T_{amb})',
+                    'T(t) = T_{amb} + (T_0 - T_{amb}) e^{-kt}'
+                ],
+                metrics: [
+                    { label: 'Temperatura Ambiente', val: '24.2 °C' },
+                    { label: 'Constante k Obtenida', val: '0.042 min⁻¹' }
+                ],
+                simType: 'cooling'
+            },
+            {
+                id: 'lab-7',
+                code: 'Lab 7',
+                title: 'Determinación Calor Específico del Cobre',
+                file: 'Lab 7 Determinacion Calor Especifico del Cobre Andres B.pdf',
+                size: '1.9 MB',
+                category: 'Termodinámica',
+                desc: 'Método calorimétrico de mezclas en recipiente adiabático para determinar la capacidad calorífica específica del Cu.',
+                formulas: [
+                    'Q_{cedido} + Q_{absorbido} = 0',
+                    'm_{Cu} c_{Cu} (T_e - T_{Cu}) + m_w c_w (T_e - T_w) = 0'
+                ],
+                metrics: [
+                    { label: 'c Cobre Tabulado', val: '0.092 cal/g°C' },
+                    { label: 'c Cobre Experimental', val: '0.095 cal/g°C' },
+                    { label: 'Discrepancia', val: '3.26 %' }
+                ],
+                simType: 'calorimetry'
+            },
+            {
+                id: 'lab-8',
+                code: 'Lab 8',
+                title: 'Ondas Mecánicas y Acústica',
+                file: 'Lab 8 me falta, el video de ondas con sonido tambien, y el informe.txt',
+                size: 'Pendiente',
+                category: 'Ondas',
+                desc: 'Propagación de perturbaciones periódicas, velocidad de fase, frecuencias de resonancia en columnas de aire.',
+                formulas: [
+                    'v = \lambda f',
+                    'f_n = n \frac{v}{2L}'
+                ],
+                metrics: [
+                    { label: 'Estado', val: 'Documentación en Edición' }
+                ],
+                simType: 'waves'
+            },
+            {
+                id: 'lab-9',
+                code: 'Lab 9',
+                title: 'Determinación Experimental de la Fuerza de Roce',
+                file: 'Lab 9 Determinación Experimental de la Fuerza de Roce.pdf',
+                size: '3.8 MB',
+                category: 'Dinámica',
+                desc: 'Coeficientes de fricción estática (μs) y cinética (μk) entre madera, metal y superficies rugosas.',
+                formulas: [
+                    'f_s \le \mu_s N, \quad f_k = \mu_k N',
+                    '\mu_s = \tan(\theta_{crit})'
+                ],
+                metrics: [
+                    { label: 'μs Madera-Madera', val: '0.38 ± 0.02' },
+                    { label: 'μk Madera-Madera', val: '0.29 ± 0.02' }
+                ],
+                simType: 'friction'
+            },
+            {
+                id: 'lab-10',
+                code: 'Lab 10',
+                title: 'Dinámica en Plano Inclinado con Ángulos Variables',
+                file: 'Lab 10 Dinamica de un plano inclinado con diferentes angulos.pdf',
+                size: '2.1 MB',
+                category: 'Dinámica',
+                desc: 'Aceleración de masas descendentes bajo la acción conjunta de la gravedad descompuesta y la fricción superficial.',
+                formulas: [
+                    'a = g (\sin\theta - \mu_k \cos\theta)',
+                    't = \sqrt{\frac{2L}{g(\sin\theta - \mu_k \cos\theta)}}'
+                ],
+                metrics: [
+                    { label: 'Rango Angular Evaluado', val: '15° a 45°' },
+                    { label: 'Aceleración Máxima', val: '4.82 m/s²' }
+                ],
+                simType: 'inclined_plane'
+            },
+            {
+                id: 'lab-11',
+                code: 'Lab 11',
+                title: 'Preparación y Análisis de un Fluido no Newtoniano',
+                file: 'Lab 11 Preparación y análisis de un fluido no Newtoniano.pdf',
+                size: '1.4 MB',
+                category: 'Mecánica de Fluidos',
+                desc: 'Comportamiento reológico y dilatante de suspensiones de almidón bajo esfuerzos cortantes elevados.',
+                formulas: [
+                    '\tau = K \left(\frac{du}{dy}\right)^n',
+                    'n > 1 \implies \text{Comportamiento Dilatante (Shear-Thickening)}'
+                ],
+                metrics: [
+                    { label: 'Proporción Mezcla', val: '2:1 (Almidón/Agua)' },
+                    { label: 'Régimen Reológico', val: 'Dilatante Puro' }
+                ],
+                simType: 'fluid'
+            },
+            {
+                id: 'lab-12',
+                code: 'Lab 12',
+                title: 'Determinación de la Constante Elástica de un Resorte',
+                file: 'Lab 12 Determinación de la constante elástica de un resorte.pdf',
+                size: '1.6 MB',
+                category: 'Oscilaciones',
+                desc: 'Ley de Hooke estática por elongación progresiva y método dinámico a través del período de oscilación armónica.',
+                formulas: [
+                    'F = -k \Delta x',
+                    'T = 2\pi \sqrt{\frac{m}{k}} \implies k = 4\pi^2 \frac{m}{T^2}'
+                ],
+                metrics: [
+                    { label: 'Constante k Estática', val: '24.5 N/m' },
+                    { label: 'Constante k Dinámica', val: '24.2 N/m' },
+                    { label: 'Concordancia', val: '98.8 %' }
+                ],
+                simType: 'spring'
+            },
+            {
+                id: 'lab-13',
+                code: 'Lab 13',
+                title: 'Combustión y Termodinámica Demostrativa (La Vela)',
+                file: 'Lab 13 Creo que era el de la vela, que seria el como demostrativo.txt',
+                size: 'Demostrativo',
+                category: 'Termodinámica',
+                desc: 'Presión hidrostática, consumo de oxígeno estequiométrico y contracción de gases por gradiente térmico.',
+                formulas: [
+                    'P V = n R T',
+                    '\Delta P = \rho g \Delta h'
+                ],
+                metrics: [
+                    { label: 'Desplazamiento de Columna de Agua', val: '3.4 cm' }
+                ],
+                simType: 'candle'
+            }
+        ];
+
+        let currentLab = null;
+        let activeTab = 'pdf';
+        let animationFrameId = null;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavMenu();
+            renderDashboardCards();
+            lucide.createIcons();
+        });
+
+        // Genera el menú lateral
+        function renderNavMenu() {
+            const container = document.getElementById('labsNavGroup');
+            container.innerHTML = LABS_DATA.map(lab => `
+                <button onclick="openLab('${lab.id}')" id="nav-btn-${lab.id}" class="nav-item flex items-center justify-between w-full px-3 py-2 text-xs rounded-lg text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <span class="truncate flex items-center">
+                        <span class="w-12 font-bold font-mono text-[11px] text-ucv-blue dark:text-ucv-gold">${lab.code}</span>
+                        <span class="truncate">${lab.title}</span>
+                    </span>
+                    <i data-lucide="chevron-right" class="w-3 h-3 text-slate-400 opacity-60"></i>
+                </button>
+            `).join('');
+        }
+
+        // Renderiza tarjetas del Dashboard
+        function renderDashboardCards() {
+            const container = document.getElementById('labsDashboardGrid');
+            container.innerHTML = LABS_DATA.map(lab => `
+                <div onclick="openLab('${lab.id}')" class="group cursor-pointer p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-ucv-blue dark:hover:border-ucv-gold transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-ucv-blue dark:text-ucv-gold font-mono">${lab.code}</span>
+                            <span class="text-[11px] font-semibold text-slate-400">${lab.category}</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-ucv-blue dark:group-hover:text-ucv-gold transition line-clamp-2">${lab.title}</h4>
+                        <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">${lab.desc}</p>
+                    </div>
+                    <div class="pt-4 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center"><i data-lucide="file" class="w-3.5 h-3.5 mr-1 text-red-500"></i> ${lab.size}</span>
+                        <span class="text-ucv-blue dark:text-ucv-gold font-semibold flex items-center group-hover:translate-x-1 transition">Ver módulo &rarr;</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Navegación principal de vistas
+        function navigate(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-ucv-blue', 'text-white', 'dark:bg-ucv-gold', 'dark:text-slate-950');
+            });
+
+            if (viewName === 'home') {
+                document.getElementById('view-home').classList.remove('hidden');
+                document.getElementById('nav-btn-home')?.classList.add('bg-ucv-blue', 'text-white');
+            } else if (viewName === 'anexos') {
+                document.getElementById('view-anexos').classList.remove('hidden');
+                document.getElementById('nav-btn-anexos')?.classList.add('bg-ucv-blue', 'text-white');
+            } else if (viewName === 'simuladores') {
+                document.getElementById('view-simuladores').classList.remove('hidden');
+                document.getElementById('nav-btn-simuladores')?.classList.add('bg-ucv-blue', 'text-white');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        // Abre un laboratorio específico
+        function openLab(labId, preferredTab = 'pdf') {
+            const lab = LABS_DATA.find(l => l.id === labId);
+            if (!lab) return;
+            currentLab = lab;
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-lab').classList.remove('hidden');
+
+            // Actualizar encabezados
+            document.getElementById('labBadgeNumber').textContent = lab.code;
+            document.getElementById('labTitle').textContent = lab.title;
+            document.getElementById('pdfFileNameDisplay').textContent = lab.file;
+            document.getElementById('pdfFileSizeDisplay').textContent = `${lab.size} • Categoría: ${lab.category}`;
+
+            // Actualizar botones de acción de PDF
+            const frame = document.getElementById('pdfViewerFrame');
+            const btnOpenNewTab = document.getElementById('btnOpenNewTab');
+            const btnDownload = document.getElementById('btnDownloadPdf');
+
+            frame.src = encodeURI(lab.file);
+            btnOpenNewTab.href = encodeURI(lab.file);
+            btnDownload.href = encodeURI(lab.file);
+            btnDownload.setAttribute('download', lab.file);
+
+            // Cargar fórmulas KaTeX
+            const formulasBox = document.getElementById('labFormulasContainer');
+            formulasBox.innerHTML = lab.formulas.map(f => `<div class="p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-lg border border-slate-100 dark:border-slate-800 text-center font-mono">$$${f}$$</div>`).join('');
+            
+            // Cargar métricas
+            const metricsBox = document.getElementById('labMetricsContainer');
+            metricsBox.innerHTML = lab.metrics.map(m => `
+                <div class="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-800/50">
+                    <span class="text-slate-500">${m.label}:</span>
+                    <span class="font-bold font-mono text-slate-800 dark:text-slate-200">${m.val}</span>
+                </div>
+            `).join('');
+
+            // Resaltar en menú
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-ucv-blue', 'text-white', 'dark:bg-ucv-gold', 'dark:text-slate-950'));
+            const activeNavBtn = document.getElementById(`nav-btn-${lab.id}`);
+            if (activeNavBtn) {
+                activeNavBtn.classList.add('bg-ucv-blue', 'text-white');
+            }
+
+            setLabTab(preferredTab);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Re-render KaTeX si está disponible
+            if (window.renderMathInElement) {
+                renderMathInElement(formulasBox);
+            }
+            lucide.createIcons();
+        }
+
+        // Pestañas internas del laboratorio
+        function setLabTab(tab) {
+            activeTab = tab;
+            ['pdf', 'simulacion', 'datos'].forEach(t => {
+                document.getElementById(`lab-tab-content-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).classList.remove('bg-white', 'dark:bg-slate-900', 'text-ucv-blue', 'dark:text-ucv-gold', 'shadow-sm');
+            });
+
+            document.getElementById(`lab-tab-content-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tab}`).classList.add('bg-white', 'dark:bg-slate-900', 'text-ucv-blue', 'dark:text-ucv-gold', 'shadow-sm');
+
+            if (tab === 'simulacion') {
+                initPhysicsSimulation();
+            } else if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            lucide.createIcons();
+        }
+
+        // Carga de archivo PDF local mediante File API
+        function handleLocalPdfUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                document.getElementById('pdfViewerFrame').src = url;
+                document.getElementById('btnOpenNewTab').href = url;
+                document.getElementById('pdfFileNameDisplay').textContent = `${file.name} (Cargado en vivo)`;
+            }
+        }
+
+        // Filtrador de búsqueda en vivo
+        function filterLabs() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = LABS_DATA.filter(l => 
+                l.title.toLowerCase().includes(query) || 
+                l.code.toLowerCase().includes(query) || 
+                l.category.toLowerCase().includes(query) ||
+                l.desc.toLowerCase().includes(query)
+            );
+
+            const navContainer = document.getElementById('labsNavGroup');
+            navContainer.innerHTML = filtered.map(lab => `
+                <button onclick="openLab('${lab.id}')" id="nav-btn-${lab.id}" class="nav-item flex items-center justify-between w-full px-3 py-2 text-xs rounded-lg text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <span class="truncate flex items-center">
+                        <span class="w-12 font-bold font-mono text-[11px] text-ucv-blue dark:text-ucv-gold">${lab.code}</span>
+                        <span class="truncate">${lab.title}</span>
+                    </span>
+                    <i data-lucide="chevron-right" class="w-3 h-3 text-slate-400 opacity-60"></i>
+                </button>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // MOTOR DE SIMULACIONES FÍSICAS EN HTML5 CANVAS
+        function initPhysicsSimulation() {
+            const canvas = document.getElementById('physicsCanvas');
+            const ctx = canvas.getContext('2d');
+            const controls = document.getElementById('simControls');
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+            if (!currentLab) return;
+
+            if (currentLab.simType === 'freefall' || currentLab.id === 'lab-1') {
+                document.getElementById('simTitle').textContent = 'Simulador de Caída Libre (g = 9.78 m/s²)';
+                document.getElementById('simDesc').textContent = 'Prueba el tiempo de caída variando la altura de desprendimiento en el campo gravitacional de Caracas.';
+                
+                let y = 40;
+                let v = 0;
+                let h0 = 100;
+                let isRunning = false;
+                const g = 9.78;
+
+                controls.innerHTML = `
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Altura Inicial: <span id="valH">20</span> m</label>
+                        <input type="range" id="sliderH" min="5" max="50" value="20" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="startFreefall()" class="w-full py-2 bg-ucv-blue text-white rounded-lg text-xs font-bold hover:bg-ucv-accent transition">
+                            Soltar Objeto
+                        </button>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs">
+                        <div>Velocidad de Impacto: <span id="vFinal" class="font-mono font-bold text-ucv-gold">--</span> m/s</div>
+                        <div>Tiempo de Caída: <span id="tFinal" class="font-mono font-bold text-ucv-gold">--</span> s</div>
+                    </div>
+                `;
+
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Suelo
+                    ctx.fillStyle = '#334155';
+                    ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+
+                    // Edificio / Regla
+                    ctx.strokeStyle = '#64748b';
+                    ctx.beginPath();
+                    ctx.moveTo(150, 20);
+                    ctx.lineTo(150, canvas.height - 30);
+                    ctx.stroke();
+
+                    // Objeto esférico de prueba
+                    ctx.fillStyle = '#D4AF37';
+                    ctx.beginPath();
+                    ctx.arc(150, y, 14, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.stroke();
+
+                    // Datos gráficos
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '12px monospace';
+                    ctx.fillText(`Posición Y: ${(canvas.height - 30 - y).toFixed(1)} px`, 180, y + 5);
+
+                    if (isRunning) {
+                        v += g * 0.04;
+                        y += v;
+                        if (y >= canvas.height - 44) {
+                            y = canvas.height - 44;
+                            isRunning = false;
+                        }
+                    }
+                    animationFrameId = requestAnimationFrame(draw);
+                }
+                draw();
+
+                window.startFreefall = function() {
+                    const h = parseFloat(document.getElementById('sliderH').value);
+                    document.getElementById('valH').textContent = h;
+                    y = 40;
+                    v = 0;
+                    isRunning = true;
+                    const t = Math.sqrt((2 * h) / g);
+                    const vf = g * t;
+                    document.getElementById('vFinal').textContent = vf.toFixed(2);
+                    document.getElementById('tFinal').textContent = t.toFixed(2);
+                };
+            } else if (currentLab.simType === 'projectile' || currentLab.id === 'lab-3' || currentLab.id === 'lab-4') {
+                document.getElementById('simTitle').textContent = 'Simulador de Trayectoria Parabólica';
+                document.getElementById('simDesc').textContent = 'Calcula en tiempo real la altura máxima, alcance y ecuación paramétrica según el ángulo.';
+
+                let t = 0;
+                let points = [];
+                const g = 9.78;
+
+                controls.innerHTML = `
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Ángulo θ: <span id="valAngle">45</span>°</label>
+                        <input type="range" id="sliderAngle" min="10" max="85" value="45" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Velocidad v₀: <span id="valV0">18</span> m/s</label>
+                        <input type="range" id="sliderV0" min="5" max="30" value="18" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="fireProjectile()" class="w-full py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition">
+                            Disparar Proyectil
+                        </button>
+                    </div>
+                `;
+
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(0, canvas.height - 25, canvas.width, 25);
+
+                    // Trayectoria dibujada
+                    ctx.strokeStyle = '#D4AF37';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let i = 0; i < points.length; i++) {
+                        if (i === 0) ctx.moveTo(points[i].x, points[i].y);
+                        else ctx.lineTo(points[i].x, points[i].y);
+                    }
+                    ctx.stroke();
+
+                    // Proyectil
+                    if (points.length > 0) {
+                        const last = points[points.length - 1];
+                        ctx.fillStyle = '#38bdf8';
+                        ctx.beginPath();
+                        ctx.arc(last.x, last.y, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    animationFrameId = requestAnimationFrame(draw);
+                }
+                draw();
+
+                window.fireProjectile = function() {
+                    const angle = parseFloat(document.getElementById('sliderAngle').value) * (Math.PI / 180);
+                    const v0 = parseFloat(document.getElementById('sliderV0').value);
+                    document.getElementById('valAngle').textContent = Math.round(angle * 180 / Math.PI);
+                    document.getElementById('valV0').textContent = v0;
+
+                    points = [];
+                    let time = 0;
+                    const startX = 40;
+                    const startY = canvas.height - 25;
+
+                    const interval = setInterval(() => {
+                        const px = startX + (v0 * Math.cos(angle) * time * 8);
+                        const py = startY - ((v0 * Math.sin(angle) * time - 0.5 * g * time * time) * 8);
+                        
+                        if (py > startY) {
+                            clearInterval(interval);
+                        } else {
+                            points.push({ x: px, y: py });
+                            time += 0.05;
+                        }
+                    }, 20);
+                };
+            } else {
+                // Vista genérica de laboratorio virtual
+                document.getElementById('simTitle').textContent = `Módulo Virtual: ${currentLab.title}`;
+                document.getElementById('simDesc').textContent = 'Osciloscopio y adquisición analógica de datos experimentales.';
+                
+                controls.innerHTML = `
+                    <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs col-span-3">
+                        <span class="font-bold">Nota:</span> Este módulo interactivo procesa los datos tabulados del informe para reproducir la curva experimental.
+                    </div>
+                `;
+
+                let phase = 0;
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = '#002855';
+                    ctx.lineWidth = 1;
+                    // Grid
+                    for (let x = 0; x < canvas.width; x += 40) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
+                        ctx.strokeStyle = '#1e293b'; ctx.stroke();
+                    }
+                    for (let y = 0; y < canvas.height; y += 40) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
+                        ctx.strokeStyle = '#1e293b'; ctx.stroke();
+                    }
+                    // Señal senoidal / armónica
+                    ctx.strokeStyle = '#D4AF37';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    for (let x = 0; x < canvas.width; x++) {
+                        const y = canvas.height / 2 + Math.sin((x * 0.02) + phase) * 60;
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                    phase += 0.04;
+                    animationFrameId = requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        }
+
+        // Modo Oscuro / Claro
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (isDark) {
+                icon.setAttribute('data-lucide', 'sun');
+            } else {
+                icon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
