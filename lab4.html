@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica 4: Lanzamiento Horizontal — Andrés Bohórquez</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <nav class="barra-navegacion">
+        <div class="barra-interior">
+            <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
+            <span class="identificador-nav">Práctica 4</span>
+        </div>
+    </nav>
+
+    <main class="contenedor-principal">
+
+        <header class="cabecera-lab-individual">
+            <div class="etiqueta">Práctica 4 · Laboratorio de Física UCV</div>
+            <h1>Lanzamiento Horizontal</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">Determinación del alcance y velocidad inicial en un lanzamiento horizontal.</p>
+        </header>
+
+        <section class="bloque-contenido">
+            <h2>Material práctico / Simulación / Esquema</h2>
+            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
+            <div class="espacio-interactivo">
+                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 4</strong>.
+            </div>
+        </section>
+
+        <section class="bloque-contenido">
+            <h2>Informe en PDF</h2>
+            <p>Archivo: <strong>Lab 4 Lanzamiento horizontal Andrés B.pdf</strong></p>
+            <div class="botones-pdf">
+                <a href="Lab%204%20Lanzamiento%20horizontal%20Andrés%20B.pdf" target="_blank" class="btn-primario">Abrir PDF en pantalla completa</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
+                <a href="Lab%204%20Lanzamiento%20horizontal%20Andrés%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+            </div>
+            <div id="contenedor-visor" class="visor-pdf-plegable">
+                <iframe id="iframe-pdf" src=""></iframe>
+            </div>
+        </section>
+        <script>
+            function mostrarVisor() {
+                var cont = document.getElementById('contenedor-visor');
+                var frame = document.getElementById('iframe-pdf');
+                var btn = document.getElementById('btn-visor');
+                if (cont.style.display === 'block') {
+                    cont.style.display = 'none';
+                    frame.src = '';
+                    btn.textContent = 'Ver PDF dentro de la página';
+                } else {
+                    frame.src = 'Lab%204%20Lanzamiento%20horizontal%20Andrés%20B.pdf';
+                    cont.style.display = 'block';
+                    btn.textContent = 'Ocultar visor PDF';
+                }
+            }
+        </script>
+    </main>
+
+</body>
+</html>

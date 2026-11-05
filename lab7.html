@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica 7: Determinación del Calor Específico del Cobre — Andrés Bohórquez</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <nav class="barra-navegacion">
+        <div class="barra-interior">
+            <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
+            <span class="identificador-nav">Práctica 7</span>
+        </div>
+    </nav>
+
+    <main class="contenedor-principal">
+
+        <header class="cabecera-lab-individual">
+            <div class="etiqueta">Práctica 7 · Laboratorio de Física UCV</div>
+            <h1>Determinación del Calor Específico del Cobre</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">Balance calorimétrico mediante mezcla agua-cobre.</p>
+        </header>
+
+        <section class="bloque-contenido">
+            <h2>Material práctico / Simulación / Esquema</h2>
+            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
+            <div class="espacio-interactivo">
+                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 7</strong>.
+            </div>
+        </section>
+
+        <section class="bloque-contenido">
+            <h2>Informe en PDF</h2>
+            <p>Archivo: <strong>Lab 7 Determinacion Calor Especifico del Cobre Andres B.pdf</strong></p>
+            <div class="botones-pdf">
+                <a href="Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf" target="_blank" class="btn-primario">Abrir PDF en pantalla completa</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
+                <a href="Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+            </div>
+            <div id="contenedor-visor" class="visor-pdf-plegable">
+                <iframe id="iframe-pdf" src=""></iframe>
+            </div>
+        </section>
+        <script>
+            function mostrarVisor() {
+                var cont = document.getElementById('contenedor-visor');
+                var frame = document.getElementById('iframe-pdf');
+                var btn = document.getElementById('btn-visor');
+                if (cont.style.display === 'block') {
+                    cont.style.display = 'none';
+                    frame.src = '';
+                    btn.textContent = 'Ver PDF dentro de la página';
+                } else {
+                    frame.src = 'Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf';
+                    cont.style.display = 'block';
+                    btn.textContent = 'Ocultar visor PDF';
+                }
+            }
+        </script>
+    </main>
+
+</body>
+</html>
