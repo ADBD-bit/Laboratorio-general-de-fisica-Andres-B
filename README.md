@@ -1,2 +1,2 @@
-# Laboratorio-general-de-fisica-Andr-s-B
+# Laboratorio-general-de-fisica-Andrés-B
 Segundo Semestre UCV
