@@ -5,18 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica 5: Equilibrio de Fuerzas — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
+        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-bottom:12px; }
+        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
+        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:4px; }
+        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; }
+        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:12px; }
+        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
+        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
+        canvas.sim-canvas { width:100%; max-width:500px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+    </style>
 </head>
 <body>
-
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 5</span>
         </div>
     </nav>
-
     <main class="contenedor-principal">
-
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 5 · Laboratorio de Física UCV</div>
             <h1>Equilibrio de Fuerzas</h1>
@@ -24,10 +32,27 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 5</strong>.
+            <h2>Simulador Interactivo: Mesa de Fuerzas</h2>
+            <p>Ajusta las fuerzas para hallar la Fuerza Equilibrante (roja) que mantiene el anillo centrado.</p>
+            <div class="sim-box">
+                <div class="sim-grid">
+                    <div class="sim-ctrl">
+                        <label><span>$F_1$ (N) / Ángulo $\theta_1$:</span><span id="l5-f1">2.0 N a 30°</span></label>
+                        <input type="range" id="in-f1" min="0.5" max="4.0" step="0.1" value="2.0" oninput="dibujarMesa()">
+                        <input type="range" id="in-a1" min="0" max="355" step="5" value="30" oninput="dibujarMesa()">
+                    </div>
+                    <div class="sim-ctrl">
+                        <label><span>$F_2$ (N) / Ángulo $\theta_2$:</span><span id="l5-f2">2.5 N a 130°</span></label>
+                        <input type="range" id="in-f2" min="0.5" max="4.0" step="0.1" value="2.5" oninput="dibujarMesa()">
+                        <input type="range" id="in-a2" min="0" max="355" step="5" value="130" oninput="dibujarMesa()">
+                    </div>
+                </div>
+                <canvas id="cv5" class="sim-canvas" width="500" height="300"></canvas>
+                <div class="sim-stats">
+                    <div class="stat-card"><span>Resultante $|\vec{R}|$</span><strong id="st5-r">2.92 N</strong></div>
+                    <div class="stat-card"><span>Equilibrante $|\vec{F}_E|$</span><strong id="st5-fe">2.92 N</strong></div>
+                    <div class="stat-card"><span>Ángulo Equilibrante</span><strong id="st5-ae">266.2°</strong></div>
+                </div>
             </div>
         </section>
 
@@ -35,37 +60,66 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 5 Equilibrio de Fuerzas Andres B.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%205%20Equilibrio%20de%20Fuerzas%20Andres%20B.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%205%20Equilibrio%20de%20Fuerzas%20Andres%20B.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
+                <a href="Lab%205%20Equilibrio%20de%20Fuerzas%20Andres%20B.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
-
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                var pdfUrl = 'Lab%205%20Equilibrio%20de%20Fuerzas%20Andres%20B.pdf';
-                if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return;
-                }
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = pdfUrl;
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
+    <script>
+        var cv = document.getElementById('cv5'), ctx = cv.getContext('2d');
+        function dibujarMesa() {
+            var f1 = parseFloat(document.getElementById('in-f1').value), a1 = parseFloat(document.getElementById('in-a1').value);
+            var f2 = parseFloat(document.getElementById('in-f2').value), a2 = parseFloat(document.getElementById('in-a2').value);
+            document.getElementById('l5-f1').textContent = f1.toFixed(1) + ' N a ' + a1 + '°';
+            document.getElementById('l5-f2').textContent = f2.toFixed(1) + ' N a ' + a2 + '°';
 
+            var r1 = a1*Math.PI/180, r2 = a2*Math.PI/180;
+            var rx = f1*Math.cos(r1) + f2*Math.cos(r2), ry = f1*Math.sin(r1) + f2*Math.sin(r2);
+            var R = Math.sqrt(rx*rx + ry*ry);
+            var angR = Math.atan2(ry, rx)*180/Math.PI; if(angR<0) angR += 360;
+            var angFE = (angR + 180) % 360;
+
+            document.getElementById('st5-r').textContent = R.toFixed(2) + ' N (' + angR.toFixed(1) + '°)';
+            document.getElementById('st5-fe').textContent = R.toFixed(2) + ' N';
+            document.getElementById('st5-ae').textContent = angFE.toFixed(1) + '°';
+
+            ctx.clearRect(0,0,500,300);
+            var cx = 250, cy = 150, radMesa = 120, sc = 24;
+            ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(cx, cy, radMesa, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-radMesa, cy); ctx.lineTo(cx+radMesa, cy);
+            ctx.moveTo(cx, cy-radMesa); ctx.lineTo(cx, cy+radMesa); ctx.stroke();
+
+            function vec(mag, angDeg, col, lbl) {
+                var ar = angDeg*Math.PI/180;
+                var ex = cx + mag*sc*Math.cos(ar), ey = cy - mag*sc*Math.sin(ar);
+                ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+                ctx.beginPath(); ctx.arc(ex, ey, 4, 0, Math.PI*2); ctx.fill();
+                ctx.font = 'bold 12px sans-serif'; ctx.fillText(lbl, ex + 6, ey - 4);
+            }
+            vec(f1, a1, '#38bdf8', 'F1');
+            vec(f2, a2, '#4ade80', 'F2');
+            vec(R, angFE, '#f87171', 'FE (Equilibrante)');
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI*2); ctx.stroke();
+        }
+        dibujarMesa();
+
+        function mostrarVisor() {
+            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
+            var pdfFile = 'Lab%205%20Equilibrio%20de%20Fuerzas%20Andres%20B.pdf';
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+            } else {
+                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
+                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
+                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+            }
+        }
+    </script>
 </body>
 </html>
