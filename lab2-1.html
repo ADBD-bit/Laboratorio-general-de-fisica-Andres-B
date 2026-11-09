@@ -6,23 +6,30 @@
     <title>Práctica 2.1: Teoría de errores e incertidumbre — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
-        .input-meds { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; margin:8px 0 12px; }
-        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); gap:8px; margin:12px 0; }
-        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
-        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
-        .stat-card strong { font-size:1rem; }
-        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:10px auto 0; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 0.85rem; align-items: end; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.02rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .btn-accion { padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .botones-pdf a[download] { background-color: #2563eb !important; color: #ffffff !important; }
+        .botones-pdf button#btn-visor { background-color: #e2e8f0 !important; color: #1e293b !important; }
     </style>
 </head>
 <body>
+
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 2.1</span>
         </div>
     </nav>
+
     <main class="contenedor-principal">
+
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 2.1 · Laboratorio de Física UCV</div>
             <h1>Teoría de errores e incertidumbre</h1>
@@ -30,18 +37,32 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Esquema Interactivo: Procesador de Incertidumbre Experimental</h2>
-            <p>Modifica la serie de mediciones separadas por coma para visualizar la dispersión respecto al valor promedio y la franja de incertidumbre.</p>
+            <h2>Analizador Interactivo de Incertidumbre y Dispersión</h2>
+            <p>Modifica la apreciación del instrumento y el nivel de dispersión aleatoria de una serie de 6 mediciones para observar las barras de error, la banda de confianza y el error porcentual.</p>
+
             <div class="sim-box">
-                <label style="font-size:0.85rem;font-weight:700;color:#1e293b;">Serie de mediciones ($x_i$):</label>
-                <input type="text" id="datos-in" class="input-meds" value="9.82, 9.75, 9.88, 9.79, 9.84, 9.76" oninput="calcularErrores()">
-                <div class="sim-stats">
-                    <div class="stat-card"><span>Promedio ($\bar{x}$)</span><strong id="e-prom">9.807</strong></div>
-                    <div class="stat-card"><span>Error Abs. Medio ($\overline{\Delta x}$)</span><strong id="e-abs">0.040</strong></div>
-                    <div class="stat-card"><span>Error Relativo ($\varepsilon_r$)</span><strong id="e-rel">0.41 %</strong></div>
-                    <div class="stat-card"><span>Expresión Final</span><strong id="e-fin">9.81 ± 0.04</strong></div>
+                <canvas id="cvErrores" class="sim-canvas" width="600" height="280"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Incertidumbre Instrumental (&Delta;x): <span id="vInst">0.20</span> cm</label>
+                        <input type="range" id="sInst" min="0.05" max="0.80" step="0.05" value="0.20">
+                    </div>
+                    <div class="ctrl">
+                        <label>Dispersión Experimental: <span id="vDisp">0.30</span> cm</label>
+                        <input type="range" id="sDisp" min="0.05" max="1.00" step="0.05" value="0.30">
+                    </div>
+                    <div class="ctrl">
+                        <button id="bMuestra" class="btn-accion">Generar Nueva Muestra</button>
+                    </div>
                 </div>
-                <canvas id="cv21" class="sim-canvas" width="600" height="240"></canvas>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mProm">12.00 cm</div><div class="metrica-lbl">Valor Promedio</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mAbs">&plusmn; 0.25 cm</div><div class="metrica-lbl">Error Absoluto (&Delta;x)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mRel">0.021</div><div class="metrica-lbl">Error Relativo</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mPorc">2.08 %</div><div class="metrica-lbl">Error Porcentual</div></div>
+                </div>
             </div>
         </section>
 
@@ -49,64 +70,96 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 2.1 Teoria de errores e incertidumbre Andrés B.pdf</strong></p>
             <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
-                <a href="Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf" download class="btn-primario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+
     </main>
+
     <script>
-        var cv = document.getElementById('cv21'), ctx = cv.getContext('2d');
-        function calcularErrores() {
-            var raw = document.getElementById('datos-in').value.split(',');
-            var vals = [];
-            for(var i=0;i<raw.length;i++){ var n = parseFloat(raw[i]); if(!isNaN(n)) vals.push(n); }
-            if(vals.length < 2) return;
-            var sum = vals.reduce(function(a,b){return a+b;},0), prom = sum/vals.length;
-            var errSum = vals.reduce(function(a,b){return a+Math.abs(b-prom);},0), dProm = errSum/vals.length;
-            var eRel = (dProm/Math.abs(prom))*100;
-            document.getElementById('e-prom').textContent = prom.toFixed(3);
-            document.getElementById('e-abs').textContent = dProm.toFixed(3);
-            document.getElementById('e-rel').textContent = eRel.toFixed(2) + ' %';
-            document.getElementById('e-fin').textContent = prom.toFixed(2) + ' ± ' + dProm.toFixed(2);
-
-            ctx.clearRect(0,0,600,240);
-            var minV = Math.min.apply(null,vals) - dProm*1.5, maxV = Math.max.apply(null,vals) + dProm*1.5;
-            if(maxV === minV) { maxV += 1; minV -= 1; }
-            function mapY(v){ return 200 - ((v - minV)/(maxV - minV))*160; }
-            // Banda de incertidumbre
-            var yTop = mapY(prom + dProm), yBot = mapY(prom - dProm), yMid = mapY(prom);
-            ctx.fillStyle = 'rgba(59,130,246,0.2)';
-            ctx.fillRect(50, yTop, 520, yBot - yTop);
-            // Línea promedio
-            ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(50, yMid); ctx.lineTo(570, yMid); ctx.stroke();
-            ctx.fillStyle = '#93c5fd'; ctx.font = '12px sans-serif';
-            ctx.fillText('Promedio = ' + prom.toFixed(3), 55, yMid - 6);
-            // Puntos individuales
-            var stepX = 480 / (vals.length);
-            for(var j=0;j<vals.length;j++){
-                var px = 80 + j*stepX, py = mapY(vals[j]);
-                ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(px, yMid); ctx.lineTo(px, py); ctx.stroke();
-                ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#fff'; ctx.fillText(vals[j].toFixed(2), px-14, py-10);
-            }
-        }
-        calcularErrores();
-
         function mostrarVisor() {
-            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
-            var pdfFile = 'Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf';
+            var cont = document.getElementById('contenedor-visor');
+            var frame = document.getElementById('iframe-pdf');
+            var btn = document.getElementById('btn-visor');
+            var pdfUrl = 'Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf';
+            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
             if (cont.style.display === 'block') {
                 cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
             } else {
-                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
-                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
-                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
             }
         }
+
+        (function() {
+            const cv = document.getElementById('cvErrores'), ctx = cv.getContext('2d');
+            const sInst = document.getElementById('sInst'), sDisp = document.getElementById('sDisp');
+            let offsets = [-0.4, 0.5, -0.2, 0.6, -0.5, 0.1];
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const dxInst = parseFloat(sInst.value);
+                const disp = parseFloat(sDisp.value);
+                const base = 12.0;
+                const datos = offsets.map(o => base + o * disp);
+                const prom = datos.reduce((a, b) => a + b, 0) / datos.length;
+                const desvMedia = datos.reduce((a, b) => a + Math.abs(b - prom), 0) / datos.length;
+                const errTotal = Math.max(dxInst, desvMedia);
+                const errRel = errTotal / prom;
+
+                document.getElementById('vInst').textContent = dxInst.toFixed(2);
+                document.getElementById('vDisp').textContent = disp.toFixed(2);
+                document.getElementById('mProm').textContent = prom.toFixed(2) + ' cm';
+                document.getElementById('mAbs').textContent = '\u00B1 ' + errTotal.toFixed(2) + ' cm';
+                document.getElementById('mRel').textContent = errRel.toFixed(3);
+                document.getElementById('mPorc').textContent = (errRel * 100).toFixed(2) + ' %';
+
+                const yCentro = 145, escY = 65; // px por cm de desviación
+
+                // Banda de incertidumbre alrededor del promedio
+                const yBandTop = yCentro - errTotal * escY;
+                const yBandBot = yCentro + errTotal * escY;
+                ctx.fillStyle = 'rgba(37, 99, 235, 0.12)';
+                ctx.fillRect(60, yBandTop, 490, yBandBot - yBandTop);
+
+                // Línea del valor promedio
+                ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(60, yCentro); ctx.lineTo(550, yCentro); ctx.stroke();
+                ctx.fillStyle = '#2563eb'; ctx.font = 'bold 12px sans-serif';
+                ctx.fillText('Promedio = ' + prom.toFixed(2) + ' cm', 410, yCentro - 8);
+
+                // Puntos y barras de error individuales
+                datos.forEach((val, idx) => {
+                    const x = 105 + idx * 80;
+                    const y = yCentro - (val - prom) * escY;
+                    const dy = dxInst * escY;
+
+                    // Barra de error
+                    ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - dy); ctx.lineTo(x, y + dy);
+                    ctx.moveTo(x - 6, y - dy); ctx.lineTo(x + 6, y - dy);
+                    ctx.moveTo(x - 6, y + dy); ctx.lineTo(x + 6, y + dy);
+                    ctx.stroke();
+
+                    // Punto
+                    ctx.fillStyle = '#ef4444';
+                    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#334155'; ctx.font = '11px sans-serif';
+                    ctx.fillText('M' + (idx + 1), x - 8, 255);
+                });
+            }
+
+            document.getElementById('bMuestra').onclick = () => {
+                offsets = offsets.map(() => (Math.random() * 2 - 1));
+                draw();
+            };
+            [sInst, sDisp].forEach(el => el.oninput = draw);
+            draw();
+        })();
     </script>
 </body>
 </html>
