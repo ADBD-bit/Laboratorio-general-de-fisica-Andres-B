@@ -540,17 +540,27 @@ body.portada-body {
     }
 }
 
-/* 1. Ocultar el botón de "Abrir PDF en pantalla completa" en todos los laboratorios */
-.botones-pdf a[target="_blank"]:not(.btn-secundario) {
+/* 1. Ocultar el visor interno y el botón que fallan en Google Sites */
+#btn-visor,
+.visor-pdf-plegable {
     display: none !important;
 }
 
-/* 2. Forzar que el botón de "Ver PDF dentro de la página" sea azul (principal) en todos */
-.botones-pdf button#btn-visor {
+/* 2. Dejar únicamente el botón de Descargar en azul principal en todos los laboratorios */
+.botones-pdf a[download] {
+    display: inline-flex !important;
     background-color: #2563eb !important;
     color: #ffffff !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 4px !important;
+    border: none !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+    transition: background-color 0.15s ease !important;
 }
 
-.botones-pdf button#btn-visor:hover {
+.botones-pdf a[download]:hover {
     background-color: #1d4ed8 !important;
 }
