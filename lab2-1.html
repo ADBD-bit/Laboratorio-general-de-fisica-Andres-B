@@ -5,18 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica 2.1: Teoría de errores e incertidumbre — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
+        .input-meds { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; margin:8px 0 12px; }
+        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); gap:8px; margin:12px 0; }
+        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
+        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
+        .stat-card strong { font-size:1rem; }
+        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:10px auto 0; }
+    </style>
 </head>
 <body>
-
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 2.1</span>
         </div>
     </nav>
-
     <main class="contenedor-principal">
-
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 2.1 · Laboratorio de Física UCV</div>
             <h1>Teoría de errores e incertidumbre</h1>
@@ -24,10 +30,18 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 2.1</strong>.
+            <h2>Esquema Interactivo: Procesador de Incertidumbre Experimental</h2>
+            <p>Modifica la serie de mediciones separadas por coma para visualizar la dispersión respecto al valor promedio y la franja de incertidumbre.</p>
+            <div class="sim-box">
+                <label style="font-size:0.85rem;font-weight:700;color:#1e293b;">Serie de mediciones ($x_i$):</label>
+                <input type="text" id="datos-in" class="input-meds" value="9.82, 9.75, 9.88, 9.79, 9.84, 9.76" oninput="calcularErrores()">
+                <div class="sim-stats">
+                    <div class="stat-card"><span>Promedio ($\bar{x}$)</span><strong id="e-prom">9.807</strong></div>
+                    <div class="stat-card"><span>Error Abs. Medio ($\overline{\Delta x}$)</span><strong id="e-abs">0.040</strong></div>
+                    <div class="stat-card"><span>Error Relativo ($\varepsilon_r$)</span><strong id="e-rel">0.41 %</strong></div>
+                    <div class="stat-card"><span>Expresión Final</span><strong id="e-fin">9.81 ± 0.04</strong></div>
+                </div>
+                <canvas id="cv21" class="sim-canvas" width="600" height="240"></canvas>
             </div>
         </section>
 
@@ -35,37 +49,64 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 2.1 Teoria de errores e incertidumbre Andrés B.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
+                <a href="Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
-
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                var pdfUrl = 'Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf';
-                if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return;
-                }
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = pdfUrl;
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
+    <script>
+        var cv = document.getElementById('cv21'), ctx = cv.getContext('2d');
+        function calcularErrores() {
+            var raw = document.getElementById('datos-in').value.split(',');
+            var vals = [];
+            for(var i=0;i<raw.length;i++){ var n = parseFloat(raw[i]); if(!isNaN(n)) vals.push(n); }
+            if(vals.length < 2) return;
+            var sum = vals.reduce(function(a,b){return a+b;},0), prom = sum/vals.length;
+            var errSum = vals.reduce(function(a,b){return a+Math.abs(b-prom);},0), dProm = errSum/vals.length;
+            var eRel = (dProm/Math.abs(prom))*100;
+            document.getElementById('e-prom').textContent = prom.toFixed(3);
+            document.getElementById('e-abs').textContent = dProm.toFixed(3);
+            document.getElementById('e-rel').textContent = eRel.toFixed(2) + ' %';
+            document.getElementById('e-fin').textContent = prom.toFixed(2) + ' ± ' + dProm.toFixed(2);
 
+            ctx.clearRect(0,0,600,240);
+            var minV = Math.min.apply(null,vals) - dProm*1.5, maxV = Math.max.apply(null,vals) + dProm*1.5;
+            if(maxV === minV) { maxV += 1; minV -= 1; }
+            function mapY(v){ return 200 - ((v - minV)/(maxV - minV))*160; }
+            // Banda de incertidumbre
+            var yTop = mapY(prom + dProm), yBot = mapY(prom - dProm), yMid = mapY(prom);
+            ctx.fillStyle = 'rgba(59,130,246,0.2)';
+            ctx.fillRect(50, yTop, 520, yBot - yTop);
+            // Línea promedio
+            ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(50, yMid); ctx.lineTo(570, yMid); ctx.stroke();
+            ctx.fillStyle = '#93c5fd'; ctx.font = '12px sans-serif';
+            ctx.fillText('Promedio = ' + prom.toFixed(3), 55, yMid - 6);
+            // Puntos individuales
+            var stepX = 480 / (vals.length);
+            for(var j=0;j<vals.length;j++){
+                var px = 80 + j*stepX, py = mapY(vals[j]);
+                ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(px, yMid); ctx.lineTo(px, py); ctx.stroke();
+                ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#fff'; ctx.fillText(vals[j].toFixed(2), px-14, py-10);
+            }
+        }
+        calcularErrores();
+
+        function mostrarVisor() {
+            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
+            var pdfFile = 'Lab%202.1%20Teoria%20de%20errores%20e%20incertidumbre%20Andr%C3%A9s%20B.pdf';
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+            } else {
+                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
+                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
+                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+            }
+        }
+    </script>
 </body>
 </html>
