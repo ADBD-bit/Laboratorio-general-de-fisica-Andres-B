@@ -5,18 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica 6: Ley de enfriamiento de Newton — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
+        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
+        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
+        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:4px; }
+        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; }
+        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:12px; }
+        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
+        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
+        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+    </style>
 </head>
 <body>
-
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 6</span>
         </div>
     </nav>
-
     <main class="contenedor-principal">
-
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 6 · Laboratorio de Física UCV</div>
             <h1>Ley de enfriamiento de Newton</h1>
@@ -24,10 +32,29 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 6</strong>.
+            <h2>Simulador Interactivo: Curva de Enfriamiento</h2>
+            <p>Explora la evolución de la temperatura desplazando el instante de medición.</p>
+            <div class="sim-box">
+                <div class="sim-grid">
+                    <div class="sim-ctrl">
+                        <label><span>Temp. Inicial ($T_0$):</span><span id="l6-t0">88 °C</span></label>
+                        <input type="range" id="in-t0" min="60" max="98" step="1" value="88" oninput="dibujarNewton()">
+                    </div>
+                    <div class="sim-ctrl">
+                        <label><span>Temp. Ambiente ($T_a$):</span><span id="l6-ta">24 °C</span></label>
+                        <input type="range" id="in-ta" min="18" max="32" step="1" value="24" oninput="dibujarNewton()">
+                    </div>
+                    <div class="sim-ctrl">
+                        <label><span>Tiempo ($t$):</span><span id="l6-t">10 min</span></label>
+                        <input type="range" id="in-t6" min="0" max="40" step="1" value="10" oninput="dibujarNewton()">
+                    </div>
+                </div>
+                <canvas id="cv6" class="sim-canvas" width="600" height="250"></canvas>
+                <div class="sim-stats">
+                    <div class="stat-card"><span>Temperatura $T(t)$</span><strong id="st6-temp">52.8 °C</strong></div>
+                    <div class="stat-card"><span>Gradiente $\Delta T$</span><strong id="st6-dt">28.8 °C</strong></div>
+                    <div class="stat-card"><span>Constante $k$</span><strong>0.080 min⁻¹</strong></div>
+                </div>
             </div>
         </section>
 
@@ -35,37 +62,67 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 6 Ley enfriamiento de Newton Andres B.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
+                <a href="Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
-
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                var pdfUrl = 'Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf';
-                if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return;
-                }
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = pdfUrl;
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
+    <script>
+        var cv = document.getElementById('cv6'), ctx = cv.getContext('2d'), k = 0.08;
+        function dibujarNewton() {
+            var T0 = parseFloat(document.getElementById('in-t0').value);
+            var Ta = parseFloat(document.getElementById('in-ta').value);
+            var tm = parseFloat(document.getElementById('in-t6').value);
+            document.getElementById('l6-t0').textContent = T0 + ' °C';
+            document.getElementById('l6-ta').textContent = Ta + ' °C';
+            document.getElementById('l6-t').textContent = tm + ' min';
 
+            var Tt = Ta + (T0 - Ta)*Math.exp(-k*tm);
+            document.getElementById('st6-temp').textContent = Tt.toFixed(1) + ' °C';
+            document.getElementById('st6-dt').textContent = (Tt - Ta).toFixed(1) + ' °C';
+
+            ctx.clearRect(0,0,600,250);
+            var ox = 50, oy = 215, w = 510, h = 180;
+            function mapX(t){ return ox + (t/40)*w; }
+            function mapY(T){ return oy - ((T - 15)/85)*h; }
+
+            // Asíntota ambiente
+            ctx.strokeStyle = '#64748b'; ctx.setLineDash([5,5]);
+            ctx.beginPath(); ctx.moveTo(ox, mapY(Ta)); ctx.lineTo(ox+w, mapY(Ta)); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
+            ctx.fillText('T amb = ' + Ta + ' °C', ox + 10, mapY(Ta) - 6);
+
+            // Curva exponencial
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
+            for(var t=0; t<=40; t+=0.5){
+                var T = Ta + (T0 - Ta)*Math.exp(-k*t);
+                if(t===0) ctx.moveTo(mapX(t), mapY(T)); else ctx.lineTo(mapX(t), mapY(T));
+            }
+            ctx.stroke();
+
+            // Punto seleccionado
+            var px = mapX(tm), py = mapY(Tt);
+            ctx.fillStyle = '#f87171'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(Tt.toFixed(1) + ' °C (' + tm + ' min)', Math.min(460, px + 8), py - 8);
+        }
+        dibujarNewton();
+
+        function mostrarVisor() {
+            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
+            var pdfFile = 'Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf';
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+            } else {
+                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
+                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
+                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+            }
+        }
+    </script>
 </body>
 </html>
