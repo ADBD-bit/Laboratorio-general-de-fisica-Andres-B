@@ -6,24 +6,29 @@
     <title>Práctica 2.2: Mediciones — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
-        .sim-ctrl { background:#fff; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:12px; }
-        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; cursor:pointer; }
-        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin:12px 0; }
-        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
-        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
-        .stat-card strong { font-size:1.05rem; }
-        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 0.85rem; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.02rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .botones-pdf a[download] { background-color: #2563eb !important; color: #ffffff !important; }
+        .botones-pdf button#btn-visor { background-color: #e2e8f0 !important; color: #1e293b !important; }
     </style>
 </head>
 <body>
+
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 2.2</span>
         </div>
     </nav>
+
     <main class="contenedor-principal">
+
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 2.2 · Laboratorio de Física UCV</div>
             <h1>Mediciones</h1>
@@ -31,20 +36,24 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Esquema Interactivo: Lectura del Calibrador Vernier</h2>
-            <p>Desliza el cursor para desplazar el nonio y observar cómo se compone la lectura sumando la regla fija más la división coincidente del nonio.</p>
+            <h2>Simulador de Calibrador Vernier (Pie de Rey)</h2>
+            <p>Desliza el cursor para medir el diámetro de la esfera de prueba. La línea roja indica la división del nonio que coincide exactamente con la escala principal.</p>
+
             <div class="sim-box">
-                <div class="sim-ctrl">
-                    <label style="display:flex;justify-content:space-between;font-weight:700;font-size:0.88rem;margin-bottom:6px;">
-                        <span>Desplazar mordaza móvil:</span><span id="v-total-lbl">14.35 mm</span>
-                    </label>
-                    <input type="range" id="in-vernier" min="0" max="40" step="0.05" value="14.35" oninput="dibujarVernier()">
+                <canvas id="cvVernier" class="sim-canvas" width="600" height="260"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Apertura de Quijadas (Diámetro): <span id="vMedida">18.40</span> mm</label>
+                        <input type="range" id="sMedida" min="2.00" max="42.00" step="0.05" value="18.40">
+                    </div>
                 </div>
-                <canvas id="cv22" class="sim-canvas" width="600" height="230"></canvas>
-                <div class="sim-stats">
-                    <div class="stat-card"><span>Regla Fija (Entero)</span><strong id="v-fija">14.00 mm</strong></div>
-                    <div class="stat-card"><span>Coincidencia Nonio</span><strong id="v-nonio">0.35 mm (Div 7)</strong></div>
-                    <div class="stat-card"><span>Lectura Total</span><strong id="v-lect">14.35 ± 0.05 mm</strong></div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mEnt">18 mm</div><div class="metrica-lbl">Escala Principal</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mNonio">+ 0.40 mm</div><div class="metrica-lbl">Lectura del Nonio</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mTotal">18.40 &plusmn; 0.05 mm</div><div class="metrica-lbl">Lectura Total</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mVol">3.26 cm³</div><div class="metrica-lbl">Volumen Esfera</div></div>
                 </div>
             </div>
         </section>
@@ -53,80 +62,96 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 2.2 Mediciones Andrés B.pdf</strong></p>
             <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
-                <a href="Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf" download class="btn-primario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+
     </main>
+
     <script>
-        var cv = document.getElementById('cv22'), ctx = cv.getContext('2d');
-        function dibujarVernier() {
-            var val = parseFloat(document.getElementById('in-vernier').value);
-            var ent = Math.floor(val);
-            var dec = Math.round((val - ent)*100)/100;
-            var divCoin = Math.round(dec / 0.05);
-            document.getElementById('v-total-lbl').textContent = val.toFixed(2) + ' mm';
-            document.getElementById('v-fija').textContent = ent.toFixed(2) + ' mm';
-            document.getElementById('v-nonio').textContent = dec.toFixed(2) + ' mm (Marca ' + divCoin + ')';
-            document.getElementById('v-lect').textContent = val.toFixed(2) + ' ± 0.05 mm';
-
-            ctx.clearRect(0,0,600,230);
-            var x0 = 60, pxMm = 8.5;
-            // Pieza medida
-            if(val > 0.5) {
-                ctx.fillStyle = '#f59e0b';
-                ctx.fillRect(x0, 150, val*pxMm, 45);
-                ctx.fillStyle = '#fff'; ctx.font = '11px sans-serif';
-                ctx.fillText('Pieza', x0 + (val*pxMm)/2 - 14, 176);
-            }
-            // Cuerpo regla fija
-            ctx.fillStyle = '#cbd5e1';
-            ctx.fillRect(30, 45, 550, 65);
-            ctx.fillRect(30, 110, 30, 95); // Mordaza fija
-            // Graduación regla fija (mm)
-            ctx.strokeStyle = '#0f172a'; ctx.fillStyle = '#0f172a'; ctx.font = '11px sans-serif';
-            for(var m=0; m<=55; m++){
-                var xm = x0 + m*pxMm;
-                var hTick = (m%10===0) ? 24 : (m%5===0 ? 16 : 10);
-                ctx.beginPath(); ctx.moveTo(xm, 110); ctx.lineTo(xm, 110 - hTick); ctx.stroke();
-                if(m%10===0) ctx.fillText((m/10)+' cm', xm - 10, 72);
-            }
-            // Cuerpo Nonio móvil
-            var xNonio = x0 + val*pxMm;
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(xNonio, 110, 210, 45);
-            ctx.fillRect(xNonio - 18, 110, 18, 95); // Mordaza móvil
-            // Divisiones del Nonio (20 div)
-            for(var n=0; n<=20; n++){
-                var xn = xNonio + n*(0.95*pxMm);
-                var isMatch = (n === divCoin);
-                ctx.strokeStyle = isMatch ? '#ef4444' : '#0f172a';
-                ctx.lineWidth = isMatch ? 2.5 : 1;
-                ctx.beginPath(); ctx.moveTo(xn, 110); ctx.lineTo(xn, 128); ctx.stroke();
-                if(n%2===0){
-                    ctx.fillStyle = isMatch ? '#dc2626' : '#0f172a';
-                    ctx.font = isMatch ? 'bold 11px sans-serif' : '10px sans-serif';
-                    ctx.fillText(n/2, xn - 3, 144);
-                }
-            }
-            ctx.lineWidth = 1;
-        }
-        dibujarVernier();
-
         function mostrarVisor() {
-            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
-            var pdfFile = 'Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf';
+            var cont = document.getElementById('contenedor-visor');
+            var frame = document.getElementById('iframe-pdf');
+            var btn = document.getElementById('btn-visor');
+            var pdfUrl = 'Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf';
+            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
             if (cont.style.display === 'block') {
                 cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
             } else {
-                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
-                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
-                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
             }
         }
+
+        (function() {
+            const cv = document.getElementById('cvVernier'), ctx = cv.getContext('2d');
+            const sMed = document.getElementById('sMedida');
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const val = parseFloat(sMed.value);
+                const entera = Math.floor(val + 0.001);
+                const frac = Math.round((val - entera) * 100) / 100;
+                const rCm = (val / 20);
+                const vol = (4 / 3) * Math.PI * Math.pow(rCm, 3);
+
+                document.getElementById('vMedida').textContent = val.toFixed(2);
+                document.getElementById('mEnt').textContent = entera + ' mm';
+                document.getElementById('mNonio').textContent = '+ ' + frac.toFixed(2) + ' mm';
+                document.getElementById('mTotal').textContent = val.toFixed(2) + ' \u00B1 0.05 mm';
+                document.getElementById('mVol').textContent = vol.toFixed(2) + ' cm³';
+
+                const xCero = 80, pxMm = 8;
+                const xMovil = xCero + val * pxMm;
+
+                // Objeto medido (Esfera metálica entre quijadas)
+                const rPx = (val * pxMm) / 2;
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath(); ctx.arc(xCero + rPx, 185, rPx, 0, Math.PI * 2); ctx.fill();
+
+                // Regla fija y quijada fija
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(40, 60, 520, 45);
+                ctx.fillRect(40, 105, 40, 115);
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+                ctx.strokeRect(40, 60, 520, 45);
+
+                // Graduación regla principal (mm)
+                ctx.fillStyle = '#1e293b'; ctx.font = '10px sans-serif';
+                for (let mm = 0; mm <= 55; mm++) {
+                    const xm = xCero + mm * pxMm;
+                    const hTick = (mm % 10 === 0) ? 18 : (mm % 5 === 0 ? 12 : 7);
+                    ctx.beginPath(); ctx.moveTo(xm, 105); ctx.lineTo(xm, 105 - hTick); ctx.stroke();
+                    if (mm % 10 === 0) ctx.fillText((mm / 10) + ' cm', xm - 10, 78);
+                }
+
+                // Corredera del Nonio y quijada móvil
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(xMovil, 105, 165, 36);
+                ctx.fillRect(xMovil - 25, 141, 25, 79);
+                ctx.strokeRect(xMovil, 105, 165, 36);
+
+                // Divisiones del Nonio (10 divisiones)
+                const divCoincidente = Math.round(frac * 10);
+                for (let i = 0; i <= 10; i++) {
+                    const xn = xMovil + i * (1.9 * pxMm);
+                    const coincide = (i === divCoincidente);
+                    ctx.strokeStyle = coincide ? '#ef4444' : '#334155';
+                    ctx.lineWidth = coincide ? 2.5 : 1.5;
+                    ctx.beginPath(); ctx.moveTo(xn, 105); ctx.lineTo(xn, 120); ctx.stroke();
+                    if (i % 2 === 0) {
+                        ctx.fillStyle = coincide ? '#ef4444' : '#334155';
+                        ctx.fillText(i, xn - 3, 133);
+                    }
+                }
+            }
+
+            sMed.oninput = draw;
+            draw();
+        })();
     </script>
 </body>
 </html>
