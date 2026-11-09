@@ -6,26 +6,31 @@
     <title>Práctica 1: Cálculo de la aceleración de la gravedad — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
-        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:14px; }
-        .sim-ctrl { background:#fff; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0; }
-        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; color:#1e293b; margin-bottom:4px; }
-        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; cursor:pointer; }
-        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin:12px 0; }
-        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
-        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
-        .stat-card strong { font-size:1.05rem; }
-        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 0.85rem; align-items: end; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .btn-accion { padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-accion.sec { background: #64748b; }
+        .botones-pdf a[download] { background-color: #2563eb !important; color: #ffffff !important; }
+        .botones-pdf button#btn-visor { background-color: #e2e8f0 !important; color: #1e293b !important; }
     </style>
 </head>
 <body>
+
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 1</span>
         </div>
     </nav>
+
     <main class="contenedor-principal">
+
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 1 · Laboratorio de Física UCV</div>
             <h1>Cálculo de la aceleración de la gravedad</h1>
@@ -33,24 +38,28 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Simulador Interactivo: Caída Libre</h2>
-            <p>Ajusta la altura de lanzamiento h y suelta la esfera para registrar el tiempo de vuelo y verificar g = 2h/t².</p>
+            <h2>Simulador de Caída Libre</h2>
+            <p>Selecciona la altura de caída (h) en la columna graduada y suelta la esfera metálica para registrar el tiempo de descenso y verificar el valor de la gravedad terrestre.</p>
+
             <div class="sim-box">
-                <div class="sim-grid">
-                    <div class="sim-ctrl">
-                        <label><span>Altura de caída (h):</span> <span id="val-h">1.50 m</span></label>
-                        <input type="range" id="in-h" min="0.50" max="2.50" step="0.05" value="1.50" oninput="resetSim()">
+                <canvas id="cvCaida" class="sim-canvas" width="600" height="300"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Altura Inicial (h): <span id="vAlt">1.50</span> m</label>
+                        <input type="range" id="sAlt" min="0.50" max="2.50" step="0.10" value="1.50">
                     </div>
-                    <div class="sim-ctrl" style="display:flex; align-items:center; gap:8px;">
-                        <button class="btn-primario" style="flex:1;" onclick="lanzar()">Soltar esfera</button>
-                        <button class="btn-secundario" onclick="resetSim()">Reiniciar</button>
+                    <div class="ctrl" style="flex-direction: row; gap: 8px;">
+                        <button id="bSoltar" class="btn-accion">Soltar Esfera</button>
+                        <button id="bReset" class="btn-accion sec">Reiniciar</button>
                     </div>
                 </div>
-                <canvas id="cv1" class="sim-canvas" width="600" height="300"></canvas>
-                <div class="sim-stats">
-                    <div class="stat-card"><span>Tiempo medido (t)</span><strong id="st-t">0.000 s</strong></div>
-                    <div class="stat-card"><span>Velocidad impacto</span><strong id="st-v">0.00 m/s</strong></div>
-                    <div class="stat-card"><span>g Experimental</span><strong id="st-g">9.80 m/s²</strong></div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mTiempo">0.000 s</div><div class="metrica-lbl">Tiempo Medido (t)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mVel">0.00 m/s</div><div class="metrica-lbl">Velocidad Final (v)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mTeo">0.553 s</div><div class="metrica-lbl">Tiempo Teórico</div></div>
+                    <div class="metrica"><div class="metrica-val">9.81 m/s²</div><div class="metrica-lbl">Gravedad (g)</div></div>
                 </div>
             </div>
         </section>
@@ -59,83 +68,98 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 1 Calculo de la aceleración de la gravedad Andres B.pdf</strong></p>
             <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
-                <a href="Lab%201%20Calculo%20de%20la%20aceleraci%C3%B3n%20de%20la%20gravedad%20Andres%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%201%20Calculo%20de%20la%20aceleraci%C3%B3n%20de%20la%20gravedad%20Andres%20B.pdf" download class="btn-primario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+
     </main>
+
     <script>
-        var cv = document.getElementById('cv1'), ctx = cv.getContext('2d');
-        var g = 9.80, h = 1.5, t = 0, tMax = Math.sqrt(2*h/g), anim = null;
-
-        function dibujar() {
-            ctx.clearRect(0,0,600,300);
-            var topY = 35, botY = 265, pixM = (botY - topY) / 2.5;
-            var startY = botY - h * pixM;
-            // Suelo y soporte
-            ctx.strokeStyle = '#475569'; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(150, botY); ctx.lineTo(450, botY); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(220, topY-10); ctx.lineTo(220, botY); ctx.stroke();
-            // Regla graduada
-            ctx.fillStyle = '#94a3b8'; ctx.font = '12px sans-serif';
-            for(var m=0; m<=2.5; m+=0.5){
-                var ym = botY - m*pixM;
-                ctx.fillRect(214, ym, 12, 2);
-                ctx.fillText(m.toFixed(1)+'m', 175, ym+4);
-            }
-            // Estroboscopio
-            for(var ti=0; ti<t; ti+=0.08){
-                var yi = startY + 0.5*g*ti*ti*pixM;
-                ctx.fillStyle = 'rgba(96,165,250,0.35)';
-                ctx.beginPath(); ctx.arc(300, yi, 9, 0, Math.PI*2); ctx.fill();
-            }
-            // Esfera actual
-            var yActual = Math.min(botY - 10, startY + 0.5*g*t*t*pixM);
-            ctx.fillStyle = '#3b82f6';
-            ctx.beginPath(); ctx.arc(300, yActual, 11, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.font = '13px sans-serif';
-            ctx.fillText('y = ' + Math.max(0, h - 0.5*g*t*t).toFixed(2) + ' m', 330, yActual+4);
-        }
-        function resetSim() {
-            if(anim) cancelAnimationFrame(anim);
-            h = parseFloat(document.getElementById('in-h').value);
-            document.getElementById('val-h').textContent = h.toFixed(2) + ' m';
-            t = 0; tMax = Math.sqrt(2*h/g);
-            document.getElementById('st-t').textContent = '0.000 s';
-            document.getElementById('st-v').textContent = '0.00 m/s';
-            dibujar();
-        }
-        function lanzar() {
-            resetSim();
-            var last = performance.now();
-            function loop(now) {
-                var dt = (now - last)/1000; last = now;
-                t += dt;
-                if(t >= tMax) { t = tMax; anim = null; }
-                else { anim = requestAnimationFrame(loop); }
-                document.getElementById('st-t').textContent = t.toFixed(3) + ' s';
-                document.getElementById('st-v').textContent = (g*t).toFixed(2) + ' m/s';
-                document.getElementById('st-g').textContent = (2*h/(tMax*tMax)).toFixed(2) + ' m/s²';
-                dibujar();
-            }
-            anim = requestAnimationFrame(loop);
-        }
-        resetSim();
-
         function mostrarVisor() {
-            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
-            var pdfFile = 'Lab%201%20Calculo%20de%20la%20aceleraci%C3%B3n%20de%20la%20gravedad%20Andres%20B.pdf';
+            var cont = document.getElementById('contenedor-visor');
+            var frame = document.getElementById('iframe-pdf');
+            var btn = document.getElementById('btn-visor');
+            var pdfUrl = 'Lab%201%20Calculo%20de%20la%20aceleraci%C3%B3n%20de%20la%20gravedad%20Andres%20B.pdf';
+            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
             if (cont.style.display === 'block') {
                 cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
             } else {
-                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
-                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
-                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
             }
         }
+
+        (function() {
+            const cv = document.getElementById('cvCaida'), ctx = cv.getContext('2d');
+            const sAlt = document.getElementById('sAlt');
+            const g = 9.81;
+            let yDescenso = 0, t = 0, cayendo = false, lastT = 0;
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const hMax = parseFloat(sAlt.value);
+                const tTotal = Math.sqrt(2 * hMax / g);
+                const vActual = g * t;
+
+                document.getElementById('vAlt').textContent = hMax.toFixed(2);
+                document.getElementById('mTiempo').textContent = t.toFixed(3) + ' s';
+                document.getElementById('mVel').textContent = vActual.toFixed(2) + ' m/s';
+                document.getElementById('mTeo').textContent = tTotal.toFixed(3) + ' s';
+
+                const ySuelo = 265, yTope = 35;
+                const escala = (ySuelo - yTope) / 2.50; // px por metro
+                const yInicio = ySuelo - hMax * escala;
+                const yEsfera = yInicio + yDescenso * escala;
+
+                // Suelo y soporte vertical
+                ctx.fillStyle = '#cbd5e1'; ctx.fillRect(100, ySuelo, 400, 12);
+                ctx.fillStyle = '#475569'; ctx.fillRect(210, 20, 10, ySuelo - 20);
+                ctx.fillRect(190, yInicio - 4, 45, 8);
+
+                // Regla graduada
+                ctx.fillStyle = '#334155'; ctx.font = '11px sans-serif';
+                for (let m = 0; m <= 2.5; m += 0.5) {
+                    const ym = ySuelo - m * escala;
+                    ctx.beginPath(); ctx.moveTo(220, ym); ctx.lineTo(232, ym); ctx.strokeStyle = '#475569'; ctx.stroke();
+                    ctx.fillText(m.toFixed(1) + ' m', 160, ym + 4);
+                }
+
+                // Línea de liberación
+                ctx.setLineDash([4, 4]); ctx.strokeStyle = '#2563eb';
+                ctx.beginPath(); ctx.moveTo(235, yInicio); ctx.lineTo(380, yInicio); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#2563eb'; ctx.fillText('h = ' + hMax.toFixed(2) + ' m', 390, yInicio + 4);
+
+                // Esfera
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath(); ctx.arc(290, Math.min(yEsfera, ySuelo - 12), 12, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#991b1b'; ctx.lineWidth = 2; ctx.stroke();
+            }
+
+            function step(ts) {
+                if (!lastT) lastT = ts;
+                const dt = (ts - lastT) / 1000; lastT = ts;
+                if (cayendo) {
+                    const hMax = parseFloat(sAlt.value);
+                    const tMax = Math.sqrt(2 * hMax / g);
+                    t += dt;
+                    if (t >= tMax) { t = tMax; yDescenso = hMax; cayendo = false; }
+                    else { yDescenso = 0.5 * g * t * t; }
+                }
+                draw();
+                if (cayendo) requestAnimationFrame(step);
+            }
+
+            document.getElementById('bSoltar').onclick = () => {
+                if (!cayendo) { t = 0; yDescenso = 0; cayendo = true; lastT = 0; requestAnimationFrame(step); }
+            };
+            document.getElementById('bReset').onclick = () => { cayendo = false; t = 0; yDescenso = 0; draw(); };
+            sAlt.oninput = () => { cayendo = false; t = 0; yDescenso = 0; draw(); };
+            draw();
+        })();
     </script>
 </body>
 </html>
