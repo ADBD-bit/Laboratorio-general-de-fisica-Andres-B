@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica 8: Ondas Mecánicas y Acústicas — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
+        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
+        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
+        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:4px; }
+        .sim-ctrl input[type=range], .sim-ctrl select { width:100%; min-height:34px; accent-color:#2563eb; }
+        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+    </style>
 </head>
 <body>
-
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 8</span>
         </div>
     </nav>
-
     <main class="contenedor-principal">
-
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 8 · Laboratorio de Física UCV</div>
             <h1>Estudio Fenomenológico y Caracterización de Ondas Mecánicas y Acústicas</h1>
@@ -30,15 +35,32 @@
             </blockquote>
             <h2>Resumen del Trabajo</h2>
             <p style="text-align: justify;">
-                Memoria técnica y fundamentación conceptual del trabajo experimental y audiovisual enfocado en la indagación fenomenológica de las ondas mecánicas bidimensionales en superficie líquida y su análogo acústico en el aire. Analiza cualitativamente reflexión, refracción, difracción (por apertura y obstáculo) e interferencia, junto a las cualidades del sonido (tono, timbre e intensidad).
+                Memoria técnica y fundamentación conceptual del trabajo experimental y audiovisual enfocado en las ondas mecánicas bidimensionales en agua (reflexión, refracción, difracción e interferencia) y las tres cualidades del sonido (tono, timbre e intensidad).
             </p>
         </section>
 
         <section class="bloque-contenido">
-            <h2>Registro Audiovisual y Esquema</h2>
-            <p>Video demostrativo de 5 minutos y visualizador de patrones ondulatorios.</p>
-            <div class="espacio-interactivo">
-                Aquí montaremos el reproductor de video de la práctica y el esquema interactivo de difracción e interferencia.
+            <h2>Simulador Interactivo: Cubeta de Ondas y Osciloscopio Acústico</h2>
+            <div class="sim-box">
+                <div class="sim-grid">
+                    <div class="sim-ctrl">
+                        <label><span>Modo de Visualización:</span></label>
+                        <select id="modo-onda">
+                            <option value="acustica">Cualidades del Sonido (Tono, Timbre, Intensidad)</option>
+                            <option value="interferencia">Cubeta Líquida: Interferencia de 2 Fuentes</option>
+                            <option value="difraccion">Cubeta Líquida: Difracción por Abertura</option>
+                        </select>
+                    </div>
+                    <div class="sim-ctrl">
+                        <label><span>Frecuencia / Tono ($f$):</span><span id="l8-f">3.0 Hz</span></label>
+                        <input type="range" id="in-f8" min="1" max="8" step="0.5" value="3">
+                    </div>
+                    <div class="sim-ctrl">
+                        <label><span>Amplitud / Armónicos:</span><span id="l8-a">70 %</span></label>
+                        <input type="range" id="in-a8" min="20" max="100" step="5" value="70">
+                    </div>
+                </div>
+                <canvas id="cv8" class="sim-canvas" width="600" height="250"></canvas>
             </div>
         </section>
 
@@ -46,8 +68,59 @@
             <h2>Informe en PDF</h2>
             <p>Estado del documento: <strong>En fase final de compilación y montaje audiovisual.</strong></p>
         </section>
-
     </main>
+    <script>
+        var cv = document.getElementById('cv8'), ctx = cv.getContext('2d'), phase = 0;
+        function animOnda() {
+            var modo = document.getElementById('modo-onda').value;
+            var f = parseFloat(document.getElementById('in-f8').value);
+            var amp = parseFloat(document.getElementById('in-a8').value);
+            document.getElementById('l8-f').textContent = f.toFixed(1) + ' Hz';
+            document.getElementById('l8-a').textContent = amp + ' %';
 
+            ctx.clearRect(0,0,600,250);
+            phase += 0.06 * f;
+
+            if(modo === 'acustica') {
+                // Onda pura vs onda con armónicos (timbre)
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
+                for(var x=20; x<=580; x+=2){
+                    var k = f * 0.03;
+                    var y = 125 + (amp*0.7)*Math.sin(k*x - phase) + (amp*0.25)*Math.sin(3*k*x - phase*3);
+                    if(x===20) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                }
+                ctx.stroke();
+                ctx.fillStyle = '#93c5fd'; ctx.font = '12px sans-serif';
+                ctx.fillText('Perfil Acústico: Tono (Frecuencia) + Timbre (Armónicos) + Intensidad (Amplitud)', 25, 230);
+            } else if(modo === 'interferencia') {
+                var s1y = 85, s2y = 165, sx = 120, wl = 90 / f;
+                for(var r=10; r<480; r+=wl){
+                    var rad = (r + (phase*3)%wl);
+                    ctx.strokeStyle = 'rgba(56,189,248,0.55)'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(sx, s1y, rad, -Math.PI/2, Math.PI/2); ctx.stroke();
+                    ctx.strokeStyle = 'rgba(74,222,128,0.55)';
+                    ctx.beginPath(); ctx.arc(sx, s2y, rad, -Math.PI/2, Math.PI/2); ctx.stroke();
+                }
+                ctx.fillStyle = '#fff'; ctx.fillText('Superposición constructiva y destructiva de frentes circulares', 25, 235);
+            } else {
+                var wl2 = 85 / f;
+                // Barrera con rendija
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(240, 10, 10, 85); ctx.fillRect(240, 155, 10, 85);
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+                for(var x1=30; x1<240; x1+=wl2){
+                    var xp = x1 + (phase*3)%wl2;
+                    if(xp < 240){ ctx.beginPath(); ctx.moveTo(xp, 20); ctx.lineTo(xp, 230); ctx.stroke(); }
+                }
+                for(var rd=10; rd<340; rd+=wl2){
+                    var rdp = rd + (phase*3)%wl2;
+                    ctx.beginPath(); ctx.arc(245, 125, rdp, -Math.PI/2.2, Math.PI/2.2); ctx.stroke();
+                }
+                ctx.fillStyle = '#fff'; ctx.fillText('Principio de Huygens: Difracción al atravesar abertura', 25, 238);
+            }
+            requestAnimationFrame(animOnda);
+        }
+        animOnda();
+    </script>
 </body>
 </html>
