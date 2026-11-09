@@ -550,21 +550,19 @@ body.portada-body {
     display: inline-flex !important;
 }
 
-/* 3. Dejar el botón de "Descargar PDF" en AZUL principal */
+/* Botón Descargar PDF en Azul y Ver PDF en Gris */
 .botones-pdf a[download] {
-    display: inline-flex !important;
     background-color: #2563eb !important;
     color: #ffffff !important;
-    font-size: 0.9rem !important;
-    font-weight: 600 !important;
-    padding: 0.75rem 1.5rem !important;
-    border-radius: 4px !important;
-    border: none !important;
-    text-decoration: none !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-    transition: background-color 0.15s ease !important;
+    display: inline-flex !important;
 }
-
 .botones-pdf a[download]:hover {
     background-color: #1d4ed8 !important;
+}
+.botones-pdf button#btn-visor {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+.botones-pdf button#btn-visor:hover {
+    background-color: #cbd5e1 !important;
 }
