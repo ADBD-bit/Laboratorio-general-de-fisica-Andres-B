@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 8: Ondas y sonido — Andrés Bohórquez</title>
+    <title>Práctica 8: Ondas Mecánicas y Acústicas — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -19,65 +19,34 @@
 
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 8 · Laboratorio de Física UCV</div>
-            <h1>Ondas y sonido</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Estudio experimental de la propagación de ondas mecánicas y acústicas.</p>
+            <h1>Estudio Fenomenológico y Caracterización de Ondas Mecánicas y Acústicas</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">Fenómenos ondulatorios en medio líquido y cualidades del sonido.</p>
         </header>
 
-        <!-- Sección de Demostración con Video Integrado -->
         <section class="bloque-contenido">
-            <h2>Demostración Práctica / Registro en Video</h2>
-            <p>Registro audiovisual de la práctica de ondas y fenómenos acústicos:</p>
-            
-            <!-- Contenedor responsivo 16:9 para el reproductor -->
-            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid #d1d5db; background-color: #111827;">
-                <!-- Cuando subas el video a YouTube, reemplaza el ID_DEL_VIDEO en el src -->
-                <iframe 
-                    id="reproductor-lab8"
-                    src="https://www.youtube-nocookie.com/embed/VIDEO_ID" 
-                    title="Video demostrativo de Práctica 8"
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-
-            <!-- Enlace alternativo de respaldo -->
-            <p style="margin-top: 1rem;">
-                <a id="enlace-video" href="https://youtu.be/VIDEO_ID" target="_blank" rel="noopener noreferrer" class="btn-secundario" style="display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span>Ver video en YouTube a pantalla completa</span> &rarr;
-                </a>
+            <blockquote style="border-left: 4px solid #2563eb; padding-left: 14px; font-style: italic; color: #475569; margin-bottom: 16px;">
+                "La luz, al igual que el sonido, se propaga por ondas que se extienden sucesivamente en todas direcciones."
+                <div style="font-weight: 600; font-style: normal; margin-top: 4px; color: #1e293b;">— Christiaan Huygens</div>
+            </blockquote>
+            <h2>Resumen del Trabajo</h2>
+            <p style="text-align: justify;">
+                Memoria técnica y fundamentación conceptual del trabajo experimental y audiovisual enfocado en la indagación fenomenológica de las ondas mecánicas bidimensionales en superficie líquida y su análogo acústico en el aire. Analiza cualitativamente reflexión, refracción, difracción (por apertura y obstáculo) e interferencia, junto a las cualidades del sonido (tono, timbre e intensidad).
             </p>
         </section>
 
-        <!-- Sección de Informe PDF (Sin el botón de pantalla completa, con visor interno y descarga directa) -->
         <section class="bloque-contenido">
-            <h2>Informe en PDF</h2>
-            <p>Archivo: <strong>Lab 8 Ondas.pdf</strong></p>
-            <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%208%20Ondas.pdf" download class="btn-primario">Descargar PDF</a>
-            </div>
-            <div id="contenedor-visor" class="visor-pdf-plegable">
-                <iframe id="iframe-pdf" src=""></iframe>
+            <h2>Registro Audiovisual y Esquema</h2>
+            <p>Video demostrativo de 5 minutos y visualizador de patrones ondulatorios.</p>
+            <div class="espacio-interactivo">
+                Aquí montaremos el reproductor de video de la práctica y el esquema interactivo de difracción e interferencia.
             </div>
         </section>
 
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = 'Lab%208%20Ondas.pdf';
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
+        <section class="bloque-contenido">
+            <h2>Informe en PDF</h2>
+            <p>Estado del documento: <strong>En fase final de compilación y montaje audiovisual.</strong></p>
+        </section>
+
     </main>
 
 </body>
