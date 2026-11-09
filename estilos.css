@@ -540,17 +540,18 @@ body.portada-body {
     }
 }
 
-/* 1. Ocultar el botón de "Abrir PDF en pantalla completa" que forzaba la descarga */
+/* 1. Ocultar el botón de "Abrir PDF en pantalla completa" */
 .botones-pdf a[target="_blank"] {
     display: none !important;
 }
 
-/* 2. Recuperar y mostrar el botón de "Ver PDF dentro de la página" (en gris) */
-#btn-visor {
-    display: inline-flex !important;
+/* 2. Ocultar temporalmente el botón "Ver PDF dentro de la página" y su cuadro negro en todos los labs */
+#btn-visor,
+#contenedor-visor {
+    display: none !important;
 }
 
-/* Botón Descargar PDF en Azul y Ver PDF en Gris */
+/* 3. Dejar el botón Descargar PDF en Azul como principal */
 .botones-pdf a[download] {
     background-color: #2563eb !important;
     color: #ffffff !important;
@@ -558,11 +559,4 @@ body.portada-body {
 }
 .botones-pdf a[download]:hover {
     background-color: #1d4ed8 !important;
-}
-.botones-pdf button#btn-visor {
-    background-color: #e2e8f0 !important;
-    color: #1e293b !important;
-}
-.botones-pdf button#btn-visor:hover {
-    background-color: #cbd5e1 !important;
 }
