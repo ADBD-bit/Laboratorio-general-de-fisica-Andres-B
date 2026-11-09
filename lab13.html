@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 13: Experimento demostrativo de la vela — Andrés Bohórquez</title>
+    <title>Práctica 13: Demostración de la Presión Atmosférica — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -19,46 +19,34 @@
 
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 13 · Laboratorio de Física UCV</div>
-            <h1>Experimento demostrativo de la vela</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Análisis termodinámico de la combustión y variación de presión en recipiente cerrado.</p>
+            <h1>Demostración Experimental de la Presión Atmosférica y Contracción Térmica</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">El fenómeno del vaso, la vela y el ascenso de agua.</p>
         </header>
 
         <section class="bloque-contenido">
-            <h2>Esquema y registro del montaje</h2>
-            <p>Registro fotográfico y observaciones del proceso experimental:</p>
+            <blockquote style="border-left: 4px solid #2563eb; padding-left: 14px; font-style: italic; color: #475569; margin-bottom: 16px;">
+                "Vivimos en el fondo de un océano del elemento aire, el cual se sabe por experiencias innegables que tiene peso."
+                <div style="font-weight: 600; font-style: normal; margin-top: 4px; color: #1e293b;">— Evangelista Torricelli</div>
+            </blockquote>
+            <h2>Fundamentación Física</h2>
+            <p style="text-align: justify;">
+                Análisis cuantitativo y cualitativo que aclara el fenómeno físico superando el mito del mero consumo químico de oxígeno. Se demuestra cómo la expansión térmica inicial del aire atrapado genera escape parcial de gas, seguido de una acelerada contracción térmica y condensación de vapor al extinguirse la llama. La caída de presión interna resultante permite a la presión atmosférica exterior empujar el líquido hacia el interior del vaso hasta el equilibrio hidrostático.
+            </p>
+        </section>
+
+        <section class="bloque-contenido">
+            <h2>Esquema por Fases del Fenómeno</h2>
+            <p>Diagrama explicativo interactivo de la variación de presiones y temperatura.</p>
             <div class="espacio-interactivo">
-                Espacio reservado para las fotografías y mediciones de la columna de agua del experimento.
+                Aquí montaremos el simulador interactivo de las 3 fases (Combustión &rarr; Enfriamiento &rarr; Ascenso hidrostático).
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Archivo: <strong>Lab 13 Demostrativo Vela.pdf</strong></p>
-            <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%2013%20Demostrativo%20Vela.pdf" download class="btn-primario">Descargar PDF</a>
-            </div>
-            <div id="contenedor-visor" class="visor-pdf-plegable">
-                <iframe id="iframe-pdf" src=""></iframe>
-            </div>
+            <p>Estado del documento: <strong>Memoria técnica demostrativa en preparación.</strong></p>
         </section>
 
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = 'Lab%2013%20Demostrativo%20Vela.pdf';
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
 
 </body>
