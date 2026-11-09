@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 14: Densidad de Fluido Inmiscible — Andrés Bohórquez</title>
+    <title>Práctica 14: Densidad por Tubo en U — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; font-size: 0.85rem; align-items: end; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .btn-accion { padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    </style>
 </head>
 <body>
 
@@ -30,24 +41,122 @@
             </blockquote>
             <h2>Resumen Experimental</h2>
             <p style="text-align: justify;">
-                Determinación experimental de la densidad del aceite de soya comercial (marca Portumesa) mediante la aplicación del Principio Fundamental de la Hidrostática en un manómetro de tubo en U, empleando agua destilada como fluido de referencia (&rho;<sub>agua</sub> = 1,00 g/cm³). El montaje empleó una manguera transparente graduada sobre soporte milimetrado, midiéndose una columna de aceite h₁ = 18,5 cm y un desnivel en ramas superiores &Delta;h = 1,7 cm para evaluar la igualdad de presiones hidrostáticas en la línea isobárica de referencia.
+                En la presente práctica se determinó experimentalmente la densidad (&rho;<sub>aceite</sub>) del aceite de soya comercial (marca Portumesa) aplicando el Principio Fundamental de la Hidrostática en un manómetro de tubo en U, empleando agua destilada como fluido de referencia (&rho;<sub>agua</sub> = 1,00 g/cm³). Sobre soporte graduado con papel milimetrado se midió una altura de columna de aceite h₁ = 18,5 cm y un desnivel entre ramas superiores &Delta;h = 1,7 cm, calculando la densidad a partir de la igualdad de presiones en la línea isobárica de separación.
             </p>
         </section>
 
         <section class="bloque-contenido">
             <h2>Simulador del Manómetro de Tubo en U</h2>
-            <p>Cálculo interactivo de densidades en función de las alturas de las columnas de fluido.</p>
-            <div class="espacio-interactivo">
-                Aquí montaremos el simulador interactivo de balance de presiones en el tubo en U.
+            <p>Explora el equilibrio hidrostático ajustando la altura de la columna de aceite (h₁) y el desnivel observado (&Delta;h), o restaura los valores medidos en el laboratorio.</p>
+
+            <div class="sim-box">
+                <canvas id="cvTuboU" class="sim-canvas" width="600" height="320"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Columna de Aceite (h₁): <span id="vH1">18.5</span> cm</label>
+                        <input type="range" id="sH1" min="10.0" max="25.0" step="0.1" value="18.5">
+                    </div>
+                    <div class="ctrl">
+                        <label>Desnivel (&Delta;h = h₁ - h₂): <span id="vDh">1.7</span> cm</label>
+                        <input type="range" id="sDh" min="0.5" max="4.0" step="0.1" value="1.7">
+                    </div>
+                    <div class="ctrl">
+                        <button id="bDatosLab" class="btn-accion">Cargar Datos del Informe (h₁=18,5 cm)</button>
+                    </div>
+                </div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mH2">16.8 cm</div><div class="metrica-lbl">Columna Agua (h₂)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mRho">0.908 g/cm³</div><div class="metrica-lbl">Densidad Aceite (&rho;<sub>aceite</sub>)</div></div>
+                    <div class="metrica"><div class="metrica-val">1.000 g/cm³</div><div class="metrica-lbl">Densidad Agua (&rho;<sub>agua</sub>)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mKg">908 kg/m³</div><div class="metrica-lbl">Equivalente SI</div></div>
+                </div>
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Estado del documento: <strong>Cálculos experimentales completados, memoria en edición.</strong></p>
+            <p>Estado del documento: <strong>Datos experimentales integrados en el simulador superior.</strong></p>
         </section>
 
     </main>
 
+    <script>
+        (function() {
+            const cv = document.getElementById('cvTuboU'), ctx = cv.getContext('2d');
+            const sH1 = document.getElementById('sH1'), sDh = document.getElementById('sDh');
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const h1 = parseFloat(sH1.value);
+                const dh = parseFloat(sDh.value);
+                const h2 = Math.max(h1 - dh, 1.0);
+                const rhoAceite = h2 / h1; // g/cm³ (con rho_agua = 1.00)
+
+                document.getElementById('vH1').textContent = h1.toFixed(1);
+                document.getElementById('vDh').textContent = dh.toFixed(1);
+                document.getElementById('mH2').textContent = h2.toFixed(1) + ' cm';
+                document.getElementById('mRho').textContent = rhoAceite.toFixed(3) + ' g/cm³';
+                document.getElementById('mKg').textContent = Math.round(rhoAceite * 1000) + ' kg/m³';
+
+                const escala = 6.5; // píxeles por cm
+                const yInterfaz = 225;
+                const yBaseU = 275;
+                const xIzq = 190, xDer = 370, anchoTubo = 36;
+
+                // Agua en la base del tubo en U y rama derecha
+                const yTopeAgua = yInterfaz - h2 * escala;
+                ctx.fillStyle = '#3b82f6';
+                // Rama izquierda desde interfaz hasta base
+                ctx.fillRect(xIzq, yInterfaz, anchoTubo, yBaseU - yInterfaz);
+                // Conexión horizontal inferior
+                ctx.fillRect(xIzq, yBaseU - anchoTubo, xDer - xIzq + anchoTubo, anchoTubo);
+                // Rama derecha desde yTopeAgua hasta base
+                ctx.fillRect(xDer, yTopeAgua, anchoTubo, yBaseU - yTopeAgua);
+
+                // Columna de Aceite en la rama izquierda (encima de la interfaz)
+                const yTopeAceite = yInterfaz - h1 * escala;
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(xIzq, yTopeAceite, anchoTubo, yInterfaz - yTopeAceite);
+
+                // Contornos del Tubo en U
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(xIzq, 40); ctx.lineTo(xIzq, yBaseU);
+                ctx.lineTo(xDer + anchoTubo, yBaseU); ctx.lineTo(xDer + anchoTubo, 40);
+                ctx.moveTo(xIzq + anchoTubo, 40); ctx.lineTo(xIzq + anchoTubo, yBaseU - anchoTubo);
+                ctx.lineTo(xDer, yBaseU - anchoTubo); ctx.lineTo(xDer, 40);
+                ctx.stroke();
+
+                // Línea isobárica de referencia (P1 = P2)
+                ctx.setLineDash([6, 4]); ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(110, yInterfaz); ctx.lineTo(480, yInterfaz); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#dc2626'; ctx.font = 'bold 12px sans-serif';
+                ctx.fillText('Línea Isobárica (P₁ = P₂)', 232, yInterfaz - 6);
+
+                // Etiquetas de alturas
+                ctx.fillStyle = '#1e293b'; ctx.font = '12px sans-serif';
+                ctx.fillText('Aceite (h₁ = ' + h1.toFixed(1) + ' cm)', 52, (yInterfaz + yTopeAceite) / 2);
+                ctx.fillText('Agua (h₂ = ' + h2.toFixed(1) + ' cm)', xDer + anchoTubo + 12, (yInterfaz + yTopeAgua) / 2);
+
+                // Indicador de Desnivel Delta h
+                ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(xIzq + anchoTubo, yTopeAceite); ctx.lineTo(xDer, yTopeAceite);
+                ctx.moveTo(xIzq + anchoTubo, yTopeAgua); ctx.lineTo(xDer, yTopeAgua);
+                ctx.stroke();
+                ctx.fillStyle = '#047857'; ctx.font = 'bold 11px sans-serif';
+                ctx.fillText('\u0394h = ' + dh.toFixed(1) + ' cm', 260, yTopeAceite - 5);
+            }
+
+            document.getElementById('bDatosLab').onclick = () => {
+                sH1.value = 18.5; sDh.value = 1.7; draw();
+            };
+            [sH1, sDh].forEach(el => el.oninput = draw);
+            draw();
+        })();
+    </script>
 </body>
 </html>
