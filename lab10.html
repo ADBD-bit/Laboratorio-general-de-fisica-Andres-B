@@ -3,82 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 10: Dinámica en Plano Inclinado — Andrés Bohórquez</title>
+    <title>Práctica 10: Dinámica de un plano inclinado — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-contenedor {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            align-items: center;
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 16px;
-            border: 1px solid #e2e8f0;
-        }
-        .canvas-area {
-            width: 100%;
-            max-width: 620px;
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            display: block;
-        }
-        .panel-controles {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            font-size: 0.85rem;
-        }
-        .ctrl-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .ctrl-item label {
-            font-weight: 600;
-            color: #334155;
-        }
-        .panel-datos {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .dato-caja {
-            background: #ffffff;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-        .dato-val {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .dato-lbl {
-            font-size: 0.72rem;
-            color: #64748b;
-            text-transform: uppercase;
-        }
-        .btn-sim {
-            padding: 8px 16px;
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-sim:hover { background: #1d4ed8; }
-        .btn-sim.reset { background: #64748b; }
-        .btn-sim.reset:hover { background: #475569; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; font-size: 0.85rem; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .btn-accion { padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-accion.sec { background: #64748b; }
     </style>
 </head>
 <body>
@@ -95,52 +32,40 @@
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 10 · Laboratorio de Física UCV</div>
             <h1>Dinámica de un plano inclinado con diferentes ángulos</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Análisis experimental del movimiento rectilíneo uniformemente acelerado variando la pendiente.</p>
+            <p style="color: #4b5563; font-size: 0.95rem;">Análisis del movimiento en un plano inclinado variando el ángulo de inclinación.</p>
         </header>
 
         <section class="bloque-contenido">
             <h2>Simulador Interactivo de Plano Inclinado</h2>
-            <p>Modifica el ángulo de inclinación (&theta;), el coeficiente de roce (&mu;) y la masa para observar el deslizamiento y las componentes de fuerza.</p>
-            
-            <div class="sim-contenedor">
-                <canvas id="cvPlano" class="canvas-area" width="600" height="320"></canvas>
-                
-                <div class="panel-controles">
-                    <div class="ctrl-item">
-                        <label for="sldAngulo">Ángulo (&theta;): <span id="txtAngulo">30</span>°</label>
-                        <input type="range" id="sldAngulo" min="10" max="60" value="30" step="1">
+            <p>Ajusta el ángulo de inclinación (&theta;), el coeficiente de roce cinético (&mu;) y la masa (m) para observar las fuerzas y el movimiento del bloque.</p>
+
+            <div class="sim-box">
+                <canvas id="cvPlano" class="sim-canvas" width="600" height="300"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Ángulo (&theta;): <span id="vAng">30</span>°</label>
+                        <input type="range" id="sAng" min="10" max="60" value="30">
                     </div>
-                    <div class="ctrl-item">
-                        <label for="sldRoce">Coeficiente de Roce (&mu;): <span id="txtRoce">0.15</span></label>
-                        <input type="range" id="sldRoce" min="0" max="0.6" value="0.15" step="0.02">
+                    <div class="ctrl">
+                        <label>Coef. de Roce (&mu;): <span id="vMu">0.15</span></label>
+                        <input type="range" id="sMu" min="0" max="0.60" step="0.02" value="0.15">
                     </div>
-                    <div class="ctrl-item">
-                        <label for="sldMasa">Masa del Bloque (m): <span id="txtMasa">2.0</span> kg</label>
-                        <input type="range" id="sldMasa" min="0.5" max="5.0" value="2.0" step="0.5">
+                    <div class="ctrl">
+                        <label>Masa (m): <span id="vMasa">2.0</span> kg</label>
+                        <input type="range" id="sMasa" min="0.5" max="5.0" step="0.5" value="2.0">
                     </div>
-                    <div class="ctrl-item" style="justify-content: flex-end; flex-direction: row; gap: 8px;">
-                        <button id="btnLanzar" class="btn-sim">Soltar Bloque</button>
-                        <button id="btnReiniciar" class="btn-sim reset">Reiniciar</button>
+                    <div class="ctrl" style="flex-direction: row; align-items: flex-end; gap: 8px;">
+                        <button id="bSoltar" class="btn-accion">Soltar</button>
+                        <button id="bReset" class="btn-accion sec">Reiniciar</button>
                     </div>
                 </div>
 
-                <div class="panel-datos">
-                    <div class="dato-caja">
-                        <div class="dato-val" id="valAcel">0.00 m/s²</div>
-                        <div class="dato-lbl">Aceleración (a)</div>
-                    </div>
-                    <div class="dato-caja">
-                        <div class="dato-val" id="valNormal">0.0 N</div>
-                        <div class="dato-lbl">Fuerza Normal (N)</div>
-                    </div>
-                    <div class="dato-caja">
-                        <div class="dato-val" id="valFriccion">0.0 N</div>
-                        <div class="dato-lbl">Fuerza de Roce (fr)</div>
-                    </div>
-                    <div class="dato-caja">
-                        <div class="dato-val" id="valTiempo">0.00 s</div>
-                        <div class="dato-lbl">Tiempo de Bajada</div>
-                    </div>
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mAcel">0.00 m/s²</div><div class="metrica-lbl">Aceleración (a)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mNorm">0.0 N</div><div class="metrica-lbl">Fuerza Normal (N)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mRoce">0.0 N</div><div class="metrica-lbl">Fuerza de Roce (f<sub>r</sub>)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mTiempo">0.00 s</div><div class="metrica-lbl">Tiempo (t)</div></div>
                 </div>
             </div>
         </section>
@@ -149,202 +74,89 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 10 Dinamica de un plano inclinado con diferentes angulos.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%2010%20Dinamica%20de%20un%20plano%20inclinado%20con%20diferentes%20angulos.pdf" class="btn-primario">
-                    Ver informe en PDF
-                </a>
-                <a href="Lab%2010%20Dinamica%20de%20un%20plano%20inclinado%20con%20diferentes%20angulos.pdf" download class="btn-secundario">
-                    Descargar PDF
-                </a>
+                <a href="Lab%2010%20Dinamica%20de%20un%20plano%20inclinado%20con%20diferentes%20angulos.pdf" class="btn-primario">Ver informe en PDF</a>
+                <a href="Lab%2010%20Dinamica%20de%20un%20plano%20inclinado%20con%20diferentes%20angulos.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
         </section>
 
     </main>
 
     <script>
-        const canvas = document.getElementById('cvPlano');
-        const ctx = canvas.getContext('2d');
-        const sldAngulo = document.getElementById('sldAngulo');
-        const sldRoce = document.getElementById('sldRoce');
-        const sldMasa = document.getElementById('sldMasa');
-        const txtAngulo = document.getElementById('txtAngulo');
-        const txtRoce = document.getElementById('txtRoce');
-        const txtMasa = document.getElementById('txtMasa');
-        const btnLanzar = document.getElementById('btnLanzar');
-        const btnReiniciar = document.getElementById('btnReiniciar');
+        (function() {
+            const cv = document.getElementById('cvPlano'), ctx = cv.getContext('2d');
+            const sAng = document.getElementById('sAng'), sMu = document.getElementById('sMu'), sMasa = document.getElementById('sMasa');
+            let pos = 0, vel = 0, t = 0, activo = false, lastT = 0;
+            const g = 9.81;
 
-        const valAcel = document.getElementById('valAcel');
-        const valNormal = document.getElementById('valNormal');
-        const valFriccion = document.getElementById('valFriccion');
-        const valTiempo = document.getElementById('valTiempo');
-
-        const g = 9.81;
-        let posS = 0;
-        let vel = 0;
-        let animando = false;
-        let tInicio = 0;
-        let tTranscurrido = 0;
-
-        function calcularFisica() {
-            const theta = parseFloat(sldAngulo.value) * Math.PI / 180;
-            const mu = parseFloat(sldRoce.value);
-            const m = parseFloat(sldMasa.value);
-
-            const N = m * g * Math.cos(theta);
-            const Ppar = m * g * Math.sin(theta);
-            const fMax = mu * N;
-
-            let a = 0;
-            let fr = fMax;
-
-            if (Ppar > fMax) {
-                a = g * (Math.sin(theta) - mu * Math.cos(theta));
-                fr = fMax;
-            } else {
-                a = 0;
-                fr = Ppar;
+            function calc() {
+                const th = parseFloat(sAng.value) * Math.PI / 180;
+                const mu = parseFloat(sMu.value), m = parseFloat(sMasa.value);
+                const N = m * g * Math.cos(th), Ppar = m * g * Math.sin(th), fMax = mu * N;
+                const a = Ppar > fMax ? g * (Math.sin(th) - mu * Math.cos(th)) : 0;
+                const fr = Ppar > fMax ? fMax : Ppar;
+                return { th, mu, m, N, fr, a };
             }
 
-            return { theta, mu, m, N, Ppar, fr, a };
-        }
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const { th, N, fr, a } = calc();
+                document.getElementById('vAng').textContent = sAng.value;
+                document.getElementById('vMu').textContent = parseFloat(sMu.value).toFixed(2);
+                document.getElementById('vMasa').textContent = parseFloat(sMasa.value).toFixed(1);
+                document.getElementById('mAcel').textContent = a.toFixed(2) + ' m/s²';
+                document.getElementById('mNorm').textContent = N.toFixed(1) + ' N';
+                document.getElementById('mRoce').textContent = fr.toFixed(1) + ' N';
+                document.getElementById('mTiempo').textContent = t.toFixed(2) + ' s';
 
-        function dibujar() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const { theta, N, fr, a } = calcularFisica();
+                const x0 = 70, y0 = 250, L = 420;
+                const x1 = x0 + L * Math.cos(th), y1 = y0 - L * Math.sin(th);
 
-            txtAngulo.textContent = sldAngulo.value;
-            txtRoce.textContent = sldRoce.value;
-            txtMasa.textContent = sldMasa.value;
+                ctx.fillStyle = '#e2e8f0';
+                ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y0); ctx.lineTo(x1, y1); ctx.closePath(); ctx.fill();
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 3; ctx.stroke();
 
-            valAcel.textContent = a.toFixed(2) + ' m/s²';
-            valNormal.textContent = N.toFixed(1) + ' N';
-            valFriccion.textContent = fr.toFixed(1) + ' N';
-            valTiempo.textContent = tTranscurrido.toFixed(2) + ' s';
+                ctx.beginPath(); ctx.arc(x0, y0, 40, 0, -th, true);
+                ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = '#2563eb'; ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(sAng.value + '°', x0 + 48, y0 - 8);
 
-            const x0 = 80;
-            const y0 = 260;
-            const longRampa = 440;
-            const xFinal = x0 + longRampa * Math.cos(theta);
-            const yFinal = y0 - longRampa * Math.sin(theta);
+                const ux = Math.cos(th), uy = -Math.sin(th), px = -uy, py = ux;
+                const d = pos * 90;
+                const bx = x1 - ux * d + px * 16, by = y1 - uy * d + py * 16;
 
-            // Suelo
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(30, y0);
-            ctx.lineTo(570, y0);
-            ctx.stroke();
+                ctx.save();
+                ctx.translate(bx, by); ctx.rotate(-th);
+                ctx.fillStyle = '#3b82f6'; ctx.fillRect(-16, -16, 32, 32);
+                ctx.strokeStyle = '#1d4ed8'; ctx.strokeRect(-16, -16, 32, 32);
+                ctx.restore();
 
-            // Rampa
-            ctx.fillStyle = '#e2e8f0';
-            ctx.beginPath();
-            ctx.moveTo(x0, y0);
-            ctx.lineTo(xFinal, y0);
-            ctx.lineTo(xFinal, yFinal);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = '#334155';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Arco del ángulo
-            ctx.beginPath();
-            ctx.arc(x0, y0, 45, 0, -theta, true);
-            ctx.strokeStyle = '#2563eb';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.fillStyle = '#2563eb';
-            ctx.font = '12px sans-serif';
-            ctx.fillText(sldAngulo.value + '°', x0 + 55, y0 - 10);
-
-            // Bloque deslizante
-            const rampaX = xFinal - x0;
-            const rampaY = yFinal - y0;
-            const uX = rampaX / longRampa;
-            const uY = rampaY / longRampa;
-            const perpX = -uY;
-            const perpY = uX;
-
-            const distPx = posS * 100;
-            const bx = xFinal - uX * distPx + perpX * 16;
-            const by = yFinal - uY * distPx + perpY * 16;
-
-            ctx.save();
-            ctx.translate(bx, by);
-            ctx.rotate(-theta);
-            ctx.fillStyle = '#3b82f6';
-            ctx.fillRect(-16, -16, 32, 32);
-            ctx.strokeStyle = '#1d4ed8';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-16, -16, 32, 32);
-
-            // Vectores de fuerza
-            ctx.restore();
-            if (!animando || a === 0) {
-                // Vector Peso
-                ctx.strokeStyle = '#ef4444';
+                // Vectores
                 ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(bx, by);
-                ctx.lineTo(bx, by + 40);
-                ctx.stroke();
-                ctx.fillStyle = '#ef4444';
-                ctx.fillText('mg', bx + 6, by + 45);
-
-                // Vector Normal
-                ctx.strokeStyle = '#10b981';
-                ctx.beginPath();
-                ctx.moveTo(bx, by);
-                ctx.lineTo(bx + perpX * 35, by + perpY * 35);
-                ctx.stroke();
-                ctx.fillStyle = '#10b981';
-                ctx.fillText('N', bx + perpX * 42, by + perpY * 42);
+                ctx.strokeStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx, by + 38); ctx.stroke();
+                ctx.fillStyle = '#ef4444'; ctx.fillText('mg', bx + 5, by + 42);
+                ctx.strokeStyle = '#10b981'; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + px * 34, by + py * 34); ctx.stroke();
+                ctx.fillStyle = '#10b981'; ctx.fillText('N', bx + px * 40, by + py * 40);
             }
-        }
 
-        let ultimoTiempo = 0;
-        function bucle(timestamp) {
-            if (!ultimoTiempo) ultimoTiempo = timestamp;
-            const dt = (timestamp - ultimoTiempo) / 1000;
-            ultimoTiempo = timestamp;
-
-            if (animando) {
-                const { a } = calcularFisica();
-                vel += a * dt;
-                posS += vel * dt;
-                tTranscurrido += dt;
-
-                // Longitud máxima de rampa simulada = 4.2 metros
-                if (posS >= 4.0) {
-                    posS = 4.0;
-                    animando = false;
+            function step(ts) {
+                if (!lastT) lastT = ts;
+                const dt = (ts - lastT) / 1000; lastT = ts;
+                if (activo) {
+                    const { a } = calc();
+                    vel += a * dt; pos += vel * dt; t += dt;
+                    if (pos >= 4.0) { pos = 4.0; activo = false; }
                 }
+                draw();
+                if (activo) requestAnimationFrame(step);
             }
-            dibujar();
-            if (animando) requestAnimationFrame(bucle);
-        }
 
-        btnLanzar.addEventListener('click', () => {
-            const { a } = calcularFisica();
-            if (a > 0 && posS < 4.0) {
-                animando = true;
-                ultimoTiempo = 0;
-                requestAnimationFrame(bucle);
-            }
-        });
-
-        btnReiniciar.addEventListener('click', () => {
-            animando = false;
-            posS = 0;
-            vel = 0;
-            tTranscurrido = 0;
-            dibujar();
-        });
-
-        [sldAngulo, sldRoce, sldMasa].forEach(el => el.addEventListener('input', () => {
-            if (!animando) dibujar();
-        }));
-
-        dibujar();
+            document.getElementById('bSoltar').onclick = () => {
+                if (calc().a > 0 && pos < 4.0 && !activo) { activo = true; lastT = 0; requestAnimationFrame(step); }
+            };
+            document.getElementById('bReset').onclick = () => { activo = false; pos = 0; vel = 0; t = 0; draw(); };
+            [sAng, sMu, sMasa].forEach(el => el.oninput = () => { if (!activo) draw(); });
+            draw();
+        })();
     </script>
 </body>
 </html>
