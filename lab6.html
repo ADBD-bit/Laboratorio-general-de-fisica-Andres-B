@@ -6,25 +6,29 @@
     <title>Práctica 6: Ley de enfriamiento de Newton — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
-        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
-        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
-        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:4px; }
-        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; }
-        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:12px; }
-        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
-        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
-        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; font-size: 0.85rem; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.02rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .botones-pdf a[download] { background-color: #2563eb !important; color: #ffffff !important; }
+        .botones-pdf button#btn-visor { background-color: #e2e8f0 !important; color: #1e293b !important; }
     </style>
 </head>
 <body>
+
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 6</span>
         </div>
     </nav>
+
     <main class="contenedor-principal">
+
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 6 · Laboratorio de Física UCV</div>
             <h1>Ley de enfriamiento de Newton</h1>
@@ -32,28 +36,31 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Simulador Interactivo: Curva de Enfriamiento</h2>
-            <p>Explora la evolución de la temperatura desplazando el instante de medición.</p>
+            <h2>Simulador de Curva de Enfriamiento Térmico</h2>
+            <p>Ajusta la temperatura inicial del líquido (T₀), la temperatura ambiente (T<sub>amb</sub>) y el tiempo de observación para analizar el decaimiento exponencial de la temperatura.</p>
+
             <div class="sim-box">
-                <div class="sim-grid">
-                    <div class="sim-ctrl">
-                        <label><span>Temp. Inicial ($T_0$):</span><span id="l6-t0">88 °C</span></label>
-                        <input type="range" id="in-t0" min="60" max="98" step="1" value="88" oninput="dibujarNewton()">
+                <canvas id="cvNewton" class="sim-canvas" width="600" height="290"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Temp. Inicial (T₀): <span id="vT0">85</span> °C</label>
+                        <input type="range" id="sT0" min="50" max="95" value="85">
                     </div>
-                    <div class="sim-ctrl">
-                        <label><span>Temp. Ambiente ($T_a$):</span><span id="l6-ta">24 °C</span></label>
-                        <input type="range" id="in-ta" min="18" max="32" step="1" value="24" oninput="dibujarNewton()">
+                    <div class="ctrl">
+                        <label>Temp. Ambiente (T<sub>amb</sub>): <span id="vTa">24</span> °C</label>
+                        <input type="range" id="sTa" min="15" max="35" value="24">
                     </div>
-                    <div class="sim-ctrl">
-                        <label><span>Tiempo ($t$):</span><span id="l6-t">10 min</span></label>
-                        <input type="range" id="in-t6" min="0" max="40" step="1" value="10" oninput="dibujarNewton()">
+                    <div class="ctrl">
+                        <label>Tiempo Evaluado (t): <span id="vTiempo">10</span> min</label>
+                        <input type="range" id="sTiempo" min="0" max="30" step="1" value="10">
                     </div>
                 </div>
-                <canvas id="cv6" class="sim-canvas" width="600" height="250"></canvas>
-                <div class="sim-stats">
-                    <div class="stat-card"><span>Temperatura $T(t)$</span><strong id="st6-temp">52.8 °C</strong></div>
-                    <div class="stat-card"><span>Gradiente $\Delta T$</span><strong id="st6-dt">28.8 °C</strong></div>
-                    <div class="stat-card"><span>Constante $k$</span><strong>0.080 min⁻¹</strong></div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mTactual">51.4 °C</div><div class="metrica-lbl">Temperatura T(t)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mDelta">27.4 °C</div><div class="metrica-lbl">Diferencial (T - T<sub>amb</sub>)</div></div>
+                    <div class="metrica"><div class="metrica-val">0.080 min⁻¹</div><div class="metrica-lbl">Constante (k)</div></div>
                 </div>
             </div>
         </section>
@@ -62,67 +69,82 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 6 Ley enfriamiento de Newton Andres B.pdf</strong></p>
             <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
-                <a href="Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf" download class="btn-primario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+
     </main>
+
     <script>
-        var cv = document.getElementById('cv6'), ctx = cv.getContext('2d'), k = 0.08;
-        function dibujarNewton() {
-            var T0 = parseFloat(document.getElementById('in-t0').value);
-            var Ta = parseFloat(document.getElementById('in-ta').value);
-            var tm = parseFloat(document.getElementById('in-t6').value);
-            document.getElementById('l6-t0').textContent = T0 + ' °C';
-            document.getElementById('l6-ta').textContent = Ta + ' °C';
-            document.getElementById('l6-t').textContent = tm + ' min';
-
-            var Tt = Ta + (T0 - Ta)*Math.exp(-k*tm);
-            document.getElementById('st6-temp').textContent = Tt.toFixed(1) + ' °C';
-            document.getElementById('st6-dt').textContent = (Tt - Ta).toFixed(1) + ' °C';
-
-            ctx.clearRect(0,0,600,250);
-            var ox = 50, oy = 215, w = 510, h = 180;
-            function mapX(t){ return ox + (t/40)*w; }
-            function mapY(T){ return oy - ((T - 15)/85)*h; }
-
-            // Asíntota ambiente
-            ctx.strokeStyle = '#64748b'; ctx.setLineDash([5,5]);
-            ctx.beginPath(); ctx.moveTo(ox, mapY(Ta)); ctx.lineTo(ox+w, mapY(Ta)); ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
-            ctx.fillText('T amb = ' + Ta + ' °C', ox + 10, mapY(Ta) - 6);
-
-            // Curva exponencial
-            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
-            for(var t=0; t<=40; t+=0.5){
-                var T = Ta + (T0 - Ta)*Math.exp(-k*t);
-                if(t===0) ctx.moveTo(mapX(t), mapY(T)); else ctx.lineTo(mapX(t), mapY(T));
-            }
-            ctx.stroke();
-
-            // Punto seleccionado
-            var px = mapX(tm), py = mapY(Tt);
-            ctx.fillStyle = '#f87171'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(Tt.toFixed(1) + ' °C (' + tm + ' min)', Math.min(460, px + 8), py - 8);
-        }
-        dibujarNewton();
-
         function mostrarVisor() {
-            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
-            var pdfFile = 'Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf';
+            var cont = document.getElementById('contenedor-visor');
+            var frame = document.getElementById('iframe-pdf');
+            var btn = document.getElementById('btn-visor');
+            var pdfUrl = 'Lab%206%20Ley%20enfriamiento%20de%20Newton%20Andres%20B.pdf';
+            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
             if (cont.style.display === 'block') {
                 cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
             } else {
-                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
-                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
-                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
             }
         }
+
+        (function() {
+            const cv = document.getElementById('cvNewton'), ctx = cv.getContext('2d');
+            const sT0 = document.getElementById('sT0'), sTa = document.getElementById('sTa'), sTiempo = document.getElementById('sTiempo');
+            const k = 0.08;
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const T0 = parseFloat(sT0.value), Ta = parseFloat(sTa.value), tEval = parseFloat(sTiempo.value);
+                const Tt = Ta + (T0 - Ta) * Math.exp(-k * tEval);
+
+                document.getElementById('vT0').textContent = T0;
+                document.getElementById('vTa').textContent = Ta;
+                document.getElementById('vTiempo').textContent = tEval;
+                document.getElementById('mTactual').textContent = Tt.toFixed(1) + ' °C';
+                document.getElementById('mDelta').textContent = (Tt - Ta).toFixed(1) + ' °C';
+
+                const gx = 70, gy = 245, gw = 480, gh = 200;
+
+                // Ejes
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(gx, gy - gh); ctx.lineTo(gx, gy); ctx.lineTo(gx + gw, gy); ctx.stroke();
+
+                // Asíntota T_ambiente
+                const yAmb = gy - (Ta / 100) * gh;
+                ctx.setLineDash([5, 4]); ctx.strokeStyle = '#10b981';
+                ctx.beginPath(); ctx.moveTo(gx, yAmb); ctx.lineTo(gx + gw, yAmb); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#047857'; ctx.font = 'bold 11px sans-serif';
+                ctx.fillText('T_amb = ' + Ta + ' °C', gx + gw - 95, yAmb - 6);
+
+                // Curva exponencial
+                ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let t = 0; t <= 30; t += 0.5) {
+                    const temp = Ta + (T0 - Ta) * Math.exp(-k * t);
+                    const x = gx + (t / 30) * gw;
+                    const y = gy - (temp / 100) * gh;
+                    if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                // Punto evaluado
+                const px = gx + (tEval / 30) * gw, py = gy - (Tt / 100) * gh;
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(Tt.toFixed(1) + ' °C (' + tEval + ' min)', px + 10, py - 8);
+            }
+
+            [sT0, sTa, sTiempo].forEach(el => el.oninput = draw);
+            draw();
+        })();
     </script>
 </body>
 </html>
