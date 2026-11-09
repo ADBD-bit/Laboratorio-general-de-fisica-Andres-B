@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 13: Experimento demostrativo de la vela y presión — Andrés Bohórquez</title>
+    <title>Práctica 13: Experimento demostrativo de la vela — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -19,23 +19,46 @@
 
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 13 · Laboratorio de Física UCV</div>
-            <h1>Experimento demostrativo de la vela y presión</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Práctica demostrativa sobre combustión, enfriamiento de gases y diferencia de presión dentro de un recipiente.</p>
+            <h1>Experimento demostrativo de la vela</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">Análisis termodinámico de la combustión y variación de presión en recipiente cerrado.</p>
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a la explicación física, fotos del montaje o esquema interactivo del ascenso del agua en el vaso.</p>
+            <h2>Esquema y registro del montaje</h2>
+            <p>Registro fotográfico y observaciones del proceso experimental:</p>
             <div class="espacio-interactivo">
-                Aquí colocaremos el esquema interactivo de la <strong>Práctica 13 (Vela y Presión Atmosférica)</strong>.
+                Espacio reservado para las fotografías y mediciones de la columna de agua del experimento.
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Este informe demostrativo se encuentra actualmente en preparación.</p>
+            <p>Archivo: <strong>Lab 13 Demostrativo Vela.pdf</strong></p>
+            <div class="botones-pdf">
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
+                <a href="Lab%2013%20Demostrativo%20Vela.pdf" download class="btn-primario">Descargar PDF</a>
+            </div>
+            <div id="contenedor-visor" class="visor-pdf-plegable">
+                <iframe id="iframe-pdf" src=""></iframe>
+            </div>
         </section>
 
+        <script>
+            function mostrarVisor() {
+                var cont = document.getElementById('contenedor-visor');
+                var frame = document.getElementById('iframe-pdf');
+                var btn = document.getElementById('btn-visor');
+                if (cont.style.display === 'block') {
+                    cont.style.display = 'none';
+                    frame.src = '';
+                    btn.textContent = 'Ver PDF dentro de la página';
+                } else {
+                    frame.src = 'Lab%2013%20Demostrativo%20Vela.pdf';
+                    cont.style.display = 'block';
+                    btn.textContent = 'Ocultar visor PDF';
+                }
+            }
+        </script>
     </main>
 
 </body>
