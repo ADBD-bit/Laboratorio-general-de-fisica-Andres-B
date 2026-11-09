@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 3: Lanzamiento Parabólico — Andrés Bohórquez</title>
+    <title>Práctica 4: Lanzamiento Horizontal — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
         .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
@@ -21,45 +21,45 @@
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
-            <span class="identificador-nav">Práctica 3</span>
+            <span class="identificador-nav">Práctica 4</span>
         </div>
     </nav>
     <main class="contenedor-principal">
         <header class="cabecera-lab-individual">
-            <div class="etiqueta">Práctica 3 · Laboratorio de Física UCV</div>
-            <h1>Lanzamiento Parabólico</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Análisis de la trayectoria bidimensional de una esfera lanzada con ángulo inicial.</p>
+            <div class="etiqueta">Práctica 4 · Laboratorio de Física UCV</div>
+            <h1>Lanzamiento Horizontal</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">Determinación del alcance y velocidad inicial en un lanzamiento horizontal.</p>
         </header>
 
         <section class="bloque-contenido">
-            <h2>Simulador Interactivo: Trayectoria Parabólica</h2>
-            <p>Ajusta el ángulo inicial y la rapidez para analizar la parábola, alcance horizontal y altura máxima.</p>
+            <h2>Simulador Interactivo: Proyección Horizontal</h2>
+            <p>Modifica la altura de la mesa y la rapidez de salida horizontal para observar la semiparábola de impacto.</p>
             <div class="sim-box">
                 <div class="sim-grid">
                     <div class="sim-ctrl">
-                        <label><span>Ángulo ($\theta_0$):</span><span id="p3-ang">45°</span></label>
-                        <input type="range" id="in-ang" min="15" max="80" step="1" value="45" oninput="dibujarParabola()">
+                        <label><span>Altura de mesa ($H$):</span><span id="p4-h">0.90 m</span></label>
+                        <input type="range" id="in-h4" min="0.40" max="1.50" step="0.05" value="0.90" oninput="dibujarHoriz()">
                     </div>
                     <div class="sim-ctrl">
-                        <label><span>Velocidad ($v_0$):</span><span id="p3-vel">7.0 m/s</span></label>
-                        <input type="range" id="in-vel" min="3.0" max="10.0" step="0.5" value="7.0" oninput="dibujarParabola()">
+                        <label><span>Velocidad salida ($v_0$):</span><span id="p4-v">3.2 m/s</span></label>
+                        <input type="range" id="in-v4" min="1.0" max="6.0" step="0.2" value="3.2" oninput="dibujarHoriz()">
                     </div>
                 </div>
-                <canvas id="cv3" class="sim-canvas" width="600" height="270"></canvas>
+                <canvas id="cv4" class="sim-canvas" width="600" height="260"></canvas>
                 <div class="sim-stats">
-                    <div class="stat-card"><span>Alcance Máx ($X_{\max}$)</span><strong id="st-xmax">5.00 m</strong></div>
-                    <div class="stat-card"><span>Altura Máx ($Y_{\max}$)</span><strong id="st-ymax">1.25 m</strong></div>
-                    <div class="stat-card"><span>Tiempo de Vuelo</span><strong id="st-tv">1.01 s</strong></div>
+                    <div class="stat-card"><span>Tiempo de Caída</span><strong id="st4-t">0.429 s</strong></div>
+                    <div class="stat-card"><span>Alcance ($X$)</span><strong id="st4-x">1.37 m</strong></div>
+                    <div class="stat-card"><span>Rapidez Impacto</span><strong id="st4-vf">5.28 m/s</strong></div>
                 </div>
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Archivo: <strong>Lab 3 Lanzamiento Parabólico Andrés B.pdf</strong></p>
+            <p>Archivo: <strong>Lab 4 Lanzamiento horizontal Andrés B.pdf</strong></p>
             <div class="botones-pdf">
                 <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
-                <a href="Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%204%20Lanzamiento%20horizontal%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
@@ -67,46 +67,41 @@
         </section>
     </main>
     <script>
-        var cv = document.getElementById('cv3'), ctx = cv.getContext('2d'), g = 9.8;
-        function dibujarParabola() {
-            var deg = parseFloat(document.getElementById('in-ang').value);
-            var v0 = parseFloat(document.getElementById('in-vel').value);
-            var rad = deg * Math.PI / 180;
-            document.getElementById('p3-ang').textContent = deg + '°';
-            document.getElementById('p3-vel').textContent = v0.toFixed(1) + ' m/s';
+        var cv = document.getElementById('cv4'), ctx = cv.getContext('2d'), g = 9.8;
+        function dibujarHoriz() {
+            var H = parseFloat(document.getElementById('in-h4').value);
+            var v0 = parseFloat(document.getElementById('in-v4').value);
+            document.getElementById('p4-h').textContent = H.toFixed(2) + ' m';
+            document.getElementById('p4-v').textContent = v0.toFixed(1) + ' m/s';
 
-            var tv = (2 * v0 * Math.sin(rad)) / g;
-            var xmax = (v0 * v0 * Math.sin(2 * rad)) / g;
-            var ymax = Math.pow(v0 * Math.sin(rad), 2) / (2 * g);
-            document.getElementById('st-xmax').textContent = xmax.toFixed(2) + ' m';
-            document.getElementById('st-ymax').textContent = ymax.toFixed(2) + ' m';
-            document.getElementById('st-tv').textContent = tv.toFixed(2) + ' s';
+            var tc = Math.sqrt(2*H/g), X = v0 * tc, vf = Math.sqrt(v0*v0 + Math.pow(g*tc,2));
+            document.getElementById('st4-t').textContent = tc.toFixed(3) + ' s';
+            document.getElementById('st4-x').textContent = X.toFixed(2) + ' m';
+            document.getElementById('st4-vf').textContent = vf.toFixed(2) + ' m/s';
 
-            ctx.clearRect(0,0,600,270);
-            var ox = 40, oy = 235, scale = 48;
-            ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(20, oy); ctx.lineTo(580, oy); ctx.stroke();
-
-            ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            ctx.beginPath();
-            for(var t=0; t<=tv; t+=tv/60){
-                var x = ox + (v0*Math.cos(rad)*t)*scale;
-                var y = oy - (v0*Math.sin(rad)*t - 0.5*g*t*t)*scale;
-                if(t===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            ctx.clearRect(0,0,600,260);
+            var ox = 90, oy = 225, sc = 115;
+            var topY = oy - H*sc;
+            // Mesa
+            ctx.fillStyle = '#334155'; ctx.fillRect(20, topY, ox-20, oy-topY);
+            ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(20, oy); ctx.lineTo(580, oy); ctx.stroke();
+            // Semiparábola
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
+            for(var t=0; t<=tc; t+=tc/40){
+                var px = ox + v0*t*sc, py = topY + 0.5*g*t*t*sc;
+                if(t===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
             }
             ctx.stroke();
-
-            var px = ox + (xmax/2)*scale, py = oy - ymax*scale;
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#93c5fd'; ctx.font = '12px sans-serif';
-            ctx.fillText('Ymax = '+ymax.toFixed(2)+'m', px - 35, py - 10);
-            ctx.fillText('Xmax = '+xmax.toFixed(2)+'m', Math.min(500, ox + xmax*scale - 30), oy + 20);
+            var impX = ox + X*sc;
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(impX, oy, 6, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = '12px sans-serif';
+            ctx.fillText('X = ' + X.toFixed(2) + ' m', Math.min(510, impX - 25), oy - 12);
         }
-        dibujarParabola();
+        dibujarHoriz();
 
         function mostrarVisor() {
             var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
-            var pdfFile = 'Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf';
+            var pdfFile = 'Lab%204%20Lanzamiento%20horizontal%20Andr%C3%A9s%20B.pdf';
             if (cont.style.display === 'block') {
                 cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
             } else {
