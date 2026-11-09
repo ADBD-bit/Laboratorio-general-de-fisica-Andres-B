@@ -539,3 +539,18 @@ body.portada-body {
         width: 100%;
     }
 }
+
+/* 1. Ocultar el botón de "Abrir PDF en pantalla completa" en todos los laboratorios */
+.botones-pdf a[target="_blank"]:not(.btn-secundario) {
+    display: none !important;
+}
+
+/* 2. Forzar que el botón de "Ver PDF dentro de la página" sea azul (principal) en todos */
+.botones-pdf button#btn-visor {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+.botones-pdf button#btn-visor:hover {
+    background-color: #1d4ed8 !important;
+}
