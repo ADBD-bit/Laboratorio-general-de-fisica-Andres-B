@@ -5,18 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica 3: Lanzamiento Parabólico — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
+        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-bottom:12px; }
+        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
+        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.84rem; font-weight:600; margin-bottom:4px; }
+        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; }
+        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin-top:12px; }
+        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
+        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
+        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+    </style>
 </head>
 <body>
-
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 3</span>
         </div>
     </nav>
-
     <main class="contenedor-principal">
-
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 3 · Laboratorio de Física UCV</div>
             <h1>Lanzamiento Parabólico</h1>
@@ -24,10 +32,25 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 3</strong>.
+            <h2>Simulador Interactivo: Trayectoria Parabólica</h2>
+            <p>Ajusta el ángulo inicial y la rapidez para analizar la parábola, alcance horizontal y altura máxima.</p>
+            <div class="sim-box">
+                <div class="sim-grid">
+                    <div class="sim-ctrl">
+                        <label><span>Ángulo ($\theta_0$):</span><span id="p3-ang">45°</span></label>
+                        <input type="range" id="in-ang" min="15" max="80" step="1" value="45" oninput="dibujarParabola()">
+                    </div>
+                    <div class="sim-ctrl">
+                        <label><span>Velocidad ($v_0$):</span><span id="p3-vel">7.0 m/s</span></label>
+                        <input type="range" id="in-vel" min="3.0" max="10.0" step="0.5" value="7.0" oninput="dibujarParabola()">
+                    </div>
+                </div>
+                <canvas id="cv3" class="sim-canvas" width="600" height="270"></canvas>
+                <div class="sim-stats">
+                    <div class="stat-card"><span>Alcance Máx ($X_{\max}$)</span><strong id="st-xmax">5.00 m</strong></div>
+                    <div class="stat-card"><span>Altura Máx ($Y_{\max}$)</span><strong id="st-ymax">1.25 m</strong></div>
+                    <div class="stat-card"><span>Tiempo de Vuelo</span><strong id="st-tv">1.01 s</strong></div>
+                </div>
             </div>
         </section>
 
@@ -35,37 +58,63 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 3 Lanzamiento Parabólico Andrés B.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
+                <a href="Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
-
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                var pdfUrl = 'Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf';
-                if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return;
-                }
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = pdfUrl;
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
+    <script>
+        var cv = document.getElementById('cv3'), ctx = cv.getContext('2d'), g = 9.8;
+        function dibujarParabola() {
+            var deg = parseFloat(document.getElementById('in-ang').value);
+            var v0 = parseFloat(document.getElementById('in-vel').value);
+            var rad = deg * Math.PI / 180;
+            document.getElementById('p3-ang').textContent = deg + '°';
+            document.getElementById('p3-vel').textContent = v0.toFixed(1) + ' m/s';
 
+            var tv = (2 * v0 * Math.sin(rad)) / g;
+            var xmax = (v0 * v0 * Math.sin(2 * rad)) / g;
+            var ymax = Math.pow(v0 * Math.sin(rad), 2) / (2 * g);
+            document.getElementById('st-xmax').textContent = xmax.toFixed(2) + ' m';
+            document.getElementById('st-ymax').textContent = ymax.toFixed(2) + ' m';
+            document.getElementById('st-tv').textContent = tv.toFixed(2) + ' s';
+
+            ctx.clearRect(0,0,600,270);
+            var ox = 40, oy = 235, scale = 48;
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(20, oy); ctx.lineTo(580, oy); ctx.stroke();
+
+            ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
+            ctx.beginPath();
+            for(var t=0; t<=tv; t+=tv/60){
+                var x = ox + (v0*Math.cos(rad)*t)*scale;
+                var y = oy - (v0*Math.sin(rad)*t - 0.5*g*t*t)*scale;
+                if(t===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            }
+            ctx.stroke();
+
+            var px = ox + (xmax/2)*scale, py = oy - ymax*scale;
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#93c5fd'; ctx.font = '12px sans-serif';
+            ctx.fillText('Ymax = '+ymax.toFixed(2)+'m', px - 35, py - 10);
+            ctx.fillText('Xmax = '+xmax.toFixed(2)+'m', Math.min(500, ox + xmax*scale - 30), oy + 20);
+        }
+        dibujarParabola();
+
+        function mostrarVisor() {
+            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
+            var pdfFile = 'Lab%203%20Lanzamiento%20Parab%C3%B3lico%20Andr%C3%A9s%20B.pdf';
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+            } else {
+                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
+                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
+                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+            }
+        }
+    </script>
 </body>
 </html>
