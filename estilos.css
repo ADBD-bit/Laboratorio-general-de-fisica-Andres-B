@@ -540,13 +540,17 @@ body.portada-body {
     }
 }
 
-/* 1. Ocultar el visor interno y el botón que fallan en Google Sites */
-#btn-visor,
-.visor-pdf-plegable {
+/* 1. Ocultar el botón de "Abrir PDF en pantalla completa" que forzaba la descarga */
+.botones-pdf a[target="_blank"] {
     display: none !important;
 }
 
-/* 2. Dejar únicamente el botón de Descargar en azul principal en todos los laboratorios */
+/* 2. Recuperar y mostrar el botón de "Ver PDF dentro de la página" (en gris) */
+#btn-visor {
+    display: inline-flex !important;
+}
+
+/* 3. Dejar el botón de "Descargar PDF" en AZUL principal */
 .botones-pdf a[download] {
     display: inline-flex !important;
     background-color: #2563eb !important;
