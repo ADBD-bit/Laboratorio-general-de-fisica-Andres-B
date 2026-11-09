@@ -5,18 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica 2.2: Mediciones — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
+        .sim-ctrl { background:#fff; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:12px; }
+        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; cursor:pointer; }
+        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin:12px 0; }
+        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
+        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
+        .stat-card strong { font-size:1.05rem; }
+        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+    </style>
 </head>
 <body>
-
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 2.2</span>
         </div>
     </nav>
-
     <main class="contenedor-principal">
-
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 2.2 · Laboratorio de Física UCV</div>
             <h1>Mediciones</h1>
@@ -24,10 +31,21 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 2.2</strong>.
+            <h2>Esquema Interactivo: Lectura del Calibrador Vernier</h2>
+            <p>Desliza el cursor para desplazar el nonio y observar cómo se compone la lectura sumando la regla fija más la división coincidente del nonio.</p>
+            <div class="sim-box">
+                <div class="sim-ctrl">
+                    <label style="display:flex;justify-content:space-between;font-weight:700;font-size:0.88rem;margin-bottom:6px;">
+                        <span>Desplazar mordaza móvil:</span><span id="v-total-lbl">14.35 mm</span>
+                    </label>
+                    <input type="range" id="in-vernier" min="0" max="40" step="0.05" value="14.35" oninput="dibujarVernier()">
+                </div>
+                <canvas id="cv22" class="sim-canvas" width="600" height="230"></canvas>
+                <div class="sim-stats">
+                    <div class="stat-card"><span>Regla Fija (Entero)</span><strong id="v-fija">14.00 mm</strong></div>
+                    <div class="stat-card"><span>Coincidencia Nonio</span><strong id="v-nonio">0.35 mm (Div 7)</strong></div>
+                    <div class="stat-card"><span>Lectura Total</span><strong id="v-lect">14.35 ± 0.05 mm</strong></div>
+                </div>
             </div>
         </section>
 
@@ -35,37 +53,80 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 2.2 Mediciones Andrés B.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
+                <a href="Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+    </main>
+    <script>
+        var cv = document.getElementById('cv22'), ctx = cv.getContext('2d');
+        function dibujarVernier() {
+            var val = parseFloat(document.getElementById('in-vernier').value);
+            var ent = Math.floor(val);
+            var dec = Math.round((val - ent)*100)/100;
+            var divCoin = Math.round(dec / 0.05);
+            document.getElementById('v-total-lbl').textContent = val.toFixed(2) + ' mm';
+            document.getElementById('v-fija').textContent = ent.toFixed(2) + ' mm';
+            document.getElementById('v-nonio').textContent = dec.toFixed(2) + ' mm (Marca ' + divCoin + ')';
+            document.getElementById('v-lect').textContent = val.toFixed(2) + ' ± 0.05 mm';
 
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                var pdfUrl = 'Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf';
-                if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return;
-                }
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = pdfUrl;
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
+            ctx.clearRect(0,0,600,230);
+            var x0 = 60, pxMm = 8.5;
+            // Pieza medida
+            if(val > 0.5) {
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(x0, 150, val*pxMm, 45);
+                ctx.fillStyle = '#fff'; ctx.font = '11px sans-serif';
+                ctx.fillText('Pieza', x0 + (val*pxMm)/2 - 14, 176);
+            }
+            // Cuerpo regla fija
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(30, 45, 550, 65);
+            ctx.fillRect(30, 110, 30, 95); // Mordaza fija
+            // Graduación regla fija (mm)
+            ctx.strokeStyle = '#0f172a'; ctx.fillStyle = '#0f172a'; ctx.font = '11px sans-serif';
+            for(var m=0; m<=55; m++){
+                var xm = x0 + m*pxMm;
+                var hTick = (m%10===0) ? 24 : (m%5===0 ? 16 : 10);
+                ctx.beginPath(); ctx.moveTo(xm, 110); ctx.lineTo(xm, 110 - hTick); ctx.stroke();
+                if(m%10===0) ctx.fillText((m/10)+' cm', xm - 10, 72);
+            }
+            // Cuerpo Nonio móvil
+            var xNonio = x0 + val*pxMm;
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(xNonio, 110, 210, 45);
+            ctx.fillRect(xNonio - 18, 110, 18, 95); // Mordaza móvil
+            // Divisiones del Nonio (20 div)
+            for(var n=0; n<=20; n++){
+                var xn = xNonio + n*(0.95*pxMm);
+                var isMatch = (n === divCoin);
+                ctx.strokeStyle = isMatch ? '#ef4444' : '#0f172a';
+                ctx.lineWidth = isMatch ? 2.5 : 1;
+                ctx.beginPath(); ctx.moveTo(xn, 110); ctx.lineTo(xn, 128); ctx.stroke();
+                if(n%2===0){
+                    ctx.fillStyle = isMatch ? '#dc2626' : '#0f172a';
+                    ctx.font = isMatch ? 'bold 11px sans-serif' : '10px sans-serif';
+                    ctx.fillText(n/2, xn - 3, 144);
                 }
             }
-        </script>
-    </main>
+            ctx.lineWidth = 1;
+        }
+        dibujarVernier();
 
+        function mostrarVisor() {
+            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
+            var pdfFile = 'Lab%202.2%20Mediciones%20Andr%C3%A9s%20B.pdf';
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+            } else {
+                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
+                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
+                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+            }
+        }
+    </script>
 </body>
 </html>
