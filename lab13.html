@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 13: Demostración de la Presión Atmosférica — Andrés Bohórquez</title>
+    <title>Práctica 13: Presión Atmosférica y Contracción Térmica — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .fases-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; }
+        .btn-fase { padding: 9px 14px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #334155; border-radius: 6px; font-weight: 600; font-size: 0.84rem; cursor: pointer; transition: 0.2s; }
+        .btn-fase.activo { background: #2563eb; color: #fff; border-color: #1d4ed8; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.02rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .nota-fase { width: 100%; background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; font-size: 0.86rem; color: #1e3a8a; border-radius: 4px; }
+    </style>
 </head>
 <body>
 
@@ -30,24 +42,130 @@
             </blockquote>
             <h2>Fundamentación Física</h2>
             <p style="text-align: justify;">
-                Análisis cuantitativo y cualitativo que aclara el fenómeno físico superando el mito del mero consumo químico de oxígeno. Se demuestra cómo la expansión térmica inicial del aire atrapado genera escape parcial de gas, seguido de una acelerada contracción térmica y condensación de vapor al extinguirse la llama. La caída de presión interna resultante permite a la presión atmosférica exterior empujar el líquido hacia el interior del vaso hasta el equilibrio hidrostático.
+                En la presente experiencia demostrativa se analiza cuantitativa y cualitativamente el ascenso de una columna de agua dentro de un recipiente invertido que confina una vela encendida, clarificando la imprecisión de atribuir el fenómeno únicamente al consumo químico de oxígeno. La expansión térmica inicial del aire atrapado genera escape parcial de gas, seguido de una brusca contracción térmica y condensación de vapor al apagarse la llama. Esto reduce la presión interna por debajo de la presión atmosférica exterior (P<sub>interna</sub> &lt; P<sub>atmosférica</sub>), la cual empuja el agua hacia arriba hasta restablecer el equilibrio hidrostático.
             </p>
         </section>
 
         <section class="bloque-contenido">
-            <h2>Esquema por Fases del Fenómeno</h2>
-            <p>Diagrama explicativo interactivo de la variación de presiones y temperatura.</p>
-            <div class="espacio-interactivo">
-                Aquí montaremos el simulador interactivo de las 3 fases (Combustión &rarr; Enfriamiento &rarr; Ascenso hidrostático).
+            <h2>Simulador Interactivo por Fases Termodinámicas</h2>
+            <p>Selecciona cada fase del experimento para observar el comportamiento de la temperatura del gas, el diferencial de presiones y el nivel de ascenso del agua.</p>
+
+            <div class="sim-box">
+                <div class="fases-bar">
+                    <button class="btn-fase activo" id="f1">Fase 1: Combustión y Expansión Térmica</button>
+                    <button class="btn-fase" id="f2">Fase 2: Extinción de Llama</button>
+                    <button class="btn-fase" id="f3">Fase 3: Contracción y Ascenso Hidrostático</button>
+                </div>
+
+                <canvas id="cvVela" class="sim-canvas" width="600" height="300"></canvas>
+
+                <div class="nota-fase" id="txtFase">
+                    <strong>Fase 1:</strong> La llama calienta el aire confinado dentro del vaso (T &approx; 380 K). El gas se expande y parte de las moléculas escapan por la base antes del sellado hidráulico.
+                </div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mTemp">380 K (Caliente)</div><div class="metrica-lbl">Temp. Interna (T)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mPres">101.3 kPa</div><div class="metrica-lbl">Presión del Gas (P<sub>int</sub>)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mNivel">0.0 cm</div><div class="metrica-lbl">Columna de Agua (h)</div></div>
+                </div>
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Estado del documento: <strong>Memoria técnica demostrativa en preparación.</strong></p>
+            <p>Estado del documento: <strong>Memoria demostrativa integrada en esta vista interactiva.</strong></p>
         </section>
 
     </main>
 
+    <script>
+        (function() {
+            const cv = document.getElementById('cvVela'), ctx = cv.getContext('2d');
+            let fase = 1, nivelAgua = 0, nivelObjetivo = 0, temp = 380, pInt = 101.3;
+
+            const infoFases = {
+                1: {
+                    t: '380 K (Caliente)', p: '101.3 kPa (= P_atm)', h: '0.0 cm', obj: 0,
+                    desc: '<strong>Fase 1 (Expansión Térmica):</strong> La vela encendida eleva la temperatura del aire atrapado. El gas se dilata y escapa parcialmente por el borde inferior.'
+                },
+                2: {
+                    t: '340 K (Descendiendo)', p: '96.5 kPa (< P_atm)', h: '2.4 cm', obj: 28,
+                    desc: '<strong>Fase 2 (Extinción y Condensación):</strong> Al agotarse el oxígeno disponible, la llama se apaga. El gas comienza a enfriarse rápidamente y el vapor de agua se condensa.'
+                },
+                3: {
+                    t: '295 K (Ambiente)', p: '93.8 kPa + \u03C1gh', h: '6.8 cm', obj: 75,
+                    desc: '<strong>Fase 3 (Equilibrio Hidrostático):</strong> La contracción térmica reduce P<sub>interna</sub>. La presión atmosférica externa empuja el agua del plato hacia adentro del vaso.'
+                }
+            };
+
+            function cambiarFase(n) {
+                fase = n;
+                [1, 2, 3].forEach(i => document.getElementById('f' + i).classList.toggle('activo', i === n));
+                const d = infoFases[n];
+                document.getElementById('mTemp').textContent = d.t;
+                document.getElementById('mPres').textContent = d.p;
+                document.getElementById('mNivel').textContent = d.h;
+                document.getElementById('txtFase').innerHTML = d.desc;
+                nivelObjetivo = d.obj;
+            }
+
+            [1, 2, 3].forEach(i => document.getElementById('f' + i).onclick = () => cambiarFase(i));
+
+            function loop() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                nivelAgua += (nivelObjetivo - nivelAgua) * 0.08;
+
+                // Plato base con agua
+                ctx.fillStyle = '#93c5fd';
+                ctx.fillRect(140, 235, 320, 30);
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(130, 225); ctx.lineTo(140, 265); ctx.lineTo(460, 265); ctx.lineTo(470, 225); ctx.stroke();
+
+                // Flechas de Presión Atmosférica externa sobre el plato
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+                [175, 425].forEach(x => {
+                    ctx.beginPath(); ctx.moveTo(x, 185); ctx.lineTo(x, 228); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(x - 5, 220); ctx.lineTo(x, 230); ctx.lineTo(x + 5, 220); ctx.stroke();
+                    ctx.fillStyle = '#1e293b'; ctx.font = 'bold 11px sans-serif';
+                    ctx.fillText('P_atm', x - 18, 178);
+                });
+
+                // Agua ascendiendo dentro del vaso
+                const yAguaInt = 235 - nivelAgua;
+                ctx.fillStyle = 'rgba(59, 130, 246, 0.55)';
+                ctx.fillRect(230, yAguaInt, 140, nivelAgua + 20);
+
+                // Vela central
+                ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
+                ctx.fillRect(288, 175, 24, 80); ctx.strokeRect(288, 175, 24, 80);
+
+                // Mecha
+                ctx.strokeStyle = '#1e293b'; ctx.beginPath(); ctx.moveTo(300, 175); ctx.lineTo(300, 165); ctx.stroke();
+
+                // Llama si está en Fase 1
+                if (fase === 1) {
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(300, 155, 8, 0, Math.PI * 2);
+                    ctx.moveTo(292, 155); ctx.lineTo(300, 136); ctx.lineTo(308, 155);
+                    ctx.fill();
+                }
+
+                // Vaso invertido
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 3;
+                ctx.strokeRect(230, 50, 140, 205);
+                ctx.fillStyle = 'rgba(203, 213, 225, 0.2)';
+                ctx.fillRect(230, 50, 140, 205);
+
+                // Indicador de presión interna
+                ctx.fillStyle = fase === 1 ? '#dc2626' : '#2563eb';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(fase === 1 ? 'Gas Caliente (Expansión)' : 'Gas Frío (P_int < P_atm)', 236, 75);
+
+                requestAnimationFrame(loop);
+            }
+            loop();
+        })();
+    </script>
 </body>
 </html>
