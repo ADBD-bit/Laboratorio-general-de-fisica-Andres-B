@@ -3,25 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 8: Ondas Mecánicas y Acústicas — Andrés Bohórquez</title>
+    <title>Práctica 8: Ondas y sonido — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
-        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
-        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
-        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:4px; }
-        .sim-ctrl input[type=range], .sim-ctrl select { width:100%; min-height:34px; accent-color:#2563eb; }
-        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #0f172a; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; font-size: 0.85rem; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.02rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .botones-pdf a[download] { background-color: #2563eb !important; color: #ffffff !important; }
+        .botones-pdf button#btn-visor { background-color: #e2e8f0 !important; color: #1e293b !important; }
     </style>
 </head>
 <body>
+
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 8</span>
         </div>
     </nav>
+
     <main class="contenedor-principal">
+
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 8 · Laboratorio de Física UCV</div>
             <h1>Estudio Fenomenológico y Caracterización de Ondas Mecánicas y Acústicas</h1>
@@ -35,92 +42,95 @@
             </blockquote>
             <h2>Resumen del Trabajo</h2>
             <p style="text-align: justify;">
-                Memoria técnica y fundamentación conceptual del trabajo experimental y audiovisual enfocado en las ondas mecánicas bidimensionales en agua (reflexión, refracción, difracción e interferencia) y las tres cualidades del sonido (tono, timbre e intensidad).
+                El presente informe constituye la memoria técnica y fundamentación conceptual del trabajo experimental y audiovisual enfocado en la indagación fenomenológica de las ondas mecánicas bidimensionales desarrolladas en la superficie de un recipiente con agua y su extensión análoga a las ondas acústicas longitudinales en el aire. Se estudian cualitativamente los fenómenos ondulatorios de reflexión, refracción, difracción e interferencia, así como las cualidades del sonido (tono, timbre e intensidad).
             </p>
         </section>
 
         <section class="bloque-contenido">
-            <h2>Simulador Interactivo: Cubeta de Ondas y Osciloscopio Acústico</h2>
+            <h2>Simulador de Ondas: Frecuencia, Amplitud e Interferencia</h2>
+            <p>Modifica la frecuencia (tono) y la amplitud (intensidad) para visualizar en tiempo real la propagación de la onda armónica y sus parámetros físicos.</p>
+
             <div class="sim-box">
-                <div class="sim-grid">
-                    <div class="sim-ctrl">
-                        <label><span>Modo de Visualización:</span></label>
-                        <select id="modo-onda">
-                            <option value="acustica">Cualidades del Sonido (Tono, Timbre, Intensidad)</option>
-                            <option value="interferencia">Cubeta Líquida: Interferencia de 2 Fuentes</option>
-                            <option value="difraccion">Cubeta Líquida: Difracción por Abertura</option>
-                        </select>
+                <canvas id="cvOndas" class="sim-canvas" width="600" height="260"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Frecuencia (f - Tono): <span id="vFrec">2.5</span> Hz</label>
+                        <input type="range" id="sFrec" min="1.0" max="5.0" step="0.5" value="2.5">
                     </div>
-                    <div class="sim-ctrl">
-                        <label><span>Frecuencia / Tono ($f$):</span><span id="l8-f">3.0 Hz</span></label>
-                        <input type="range" id="in-f8" min="1" max="8" step="0.5" value="3">
-                    </div>
-                    <div class="sim-ctrl">
-                        <label><span>Amplitud / Armónicos:</span><span id="l8-a">70 %</span></label>
-                        <input type="range" id="in-a8" min="20" max="100" step="5" value="70">
+                    <div class="ctrl">
+                        <label>Amplitud (A - Intensidad): <span id="vAmp">50</span> px</label>
+                        <input type="range" id="sAmp" min="15" max="85" step="5" value="50">
                     </div>
                 </div>
-                <canvas id="cv8" class="sim-canvas" width="600" height="250"></canvas>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mLambda">136 cm</div><div class="metrica-lbl">Longitud de Onda (&lambda;)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mPeriodo">0.40 s</div><div class="metrica-lbl">Período (T)</div></div>
+                    <div class="metrica"><div class="metrica-val">340 m/s</div><div class="metrica-lbl">Rapidez Sonido Aire</div></div>
+                </div>
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Estado del documento: <strong>En fase final de compilación y montaje audiovisual.</strong></p>
+            <p>Archivo: <strong>Lab 8 Ondas.pdf</strong></p>
+            <div class="botones-pdf">
+                <a href="Lab%208%20Ondas.pdf" download class="btn-primario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
+            </div>
+            <div id="contenedor-visor" class="visor-pdf-plegable">
+                <iframe id="iframe-pdf" src=""></iframe>
+            </div>
         </section>
+
     </main>
+
     <script>
-        var cv = document.getElementById('cv8'), ctx = cv.getContext('2d'), phase = 0;
-        function animOnda() {
-            var modo = document.getElementById('modo-onda').value;
-            var f = parseFloat(document.getElementById('in-f8').value);
-            var amp = parseFloat(document.getElementById('in-a8').value);
-            document.getElementById('l8-f').textContent = f.toFixed(1) + ' Hz';
-            document.getElementById('l8-a').textContent = amp + ' %';
+        function mostrarVisor() {
+            var cont = document.getElementById('contenedor-visor');
+            var frame = document.getElementById('iframe-pdf');
+            var btn = document.getElementById('btn-visor');
+            var pdfUrl = 'Lab%208%20Ondas.pdf';
+            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
+            if (cont.style.display === 'block') {
+                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+            } else {
+                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+            }
+        }
 
-            ctx.clearRect(0,0,600,250);
-            phase += 0.06 * f;
+        (function() {
+            const cv = document.getElementById('cvOndas'), ctx = cv.getContext('2d');
+            const sFrec = document.getElementById('sFrec'), sAmp = document.getElementById('sAmp');
+            let fase = 0;
 
-            if(modo === 'acustica') {
-                // Onda pura vs onda con armónicos (timbre)
-                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
-                for(var x=20; x<=580; x+=2){
-                    var k = f * 0.03;
-                    var y = 125 + (amp*0.7)*Math.sin(k*x - phase) + (amp*0.25)*Math.sin(3*k*x - phase*3);
-                    if(x===20) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            function loop() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const f = parseFloat(sFrec.value), A = parseFloat(sAmp.value);
+                const T = 1 / f, lambda = Math.round(340 / f);
+
+                document.getElementById('vFrec').textContent = f.toFixed(1);
+                document.getElementById('vAmp').textContent = A;
+                document.getElementById('mPeriodo').textContent = T.toFixed(2) + ' s';
+                document.getElementById('mLambda').textContent = lambda + ' cm';
+
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(0, 130); ctx.lineTo(600, 130); ctx.stroke();
+
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let x = 0; x <= 600; x += 4) {
+                    const y = 130 + A * Math.sin((x * f * 0.02) - fase);
+                    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
-                ctx.fillStyle = '#93c5fd'; ctx.font = '12px sans-serif';
-                ctx.fillText('Perfil Acústico: Tono (Frecuencia) + Timbre (Armónicos) + Intensidad (Amplitud)', 25, 230);
-            } else if(modo === 'interferencia') {
-                var s1y = 85, s2y = 165, sx = 120, wl = 90 / f;
-                for(var r=10; r<480; r+=wl){
-                    var rad = (r + (phase*3)%wl);
-                    ctx.strokeStyle = 'rgba(56,189,248,0.55)'; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.arc(sx, s1y, rad, -Math.PI/2, Math.PI/2); ctx.stroke();
-                    ctx.strokeStyle = 'rgba(74,222,128,0.55)';
-                    ctx.beginPath(); ctx.arc(sx, s2y, rad, -Math.PI/2, Math.PI/2); ctx.stroke();
-                }
-                ctx.fillStyle = '#fff'; ctx.fillText('Superposición constructiva y destructiva de frentes circulares', 25, 235);
-            } else {
-                var wl2 = 85 / f;
-                // Barrera con rendija
-                ctx.fillStyle = '#f59e0b';
-                ctx.fillRect(240, 10, 10, 85); ctx.fillRect(240, 155, 10, 85);
-                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
-                for(var x1=30; x1<240; x1+=wl2){
-                    var xp = x1 + (phase*3)%wl2;
-                    if(xp < 240){ ctx.beginPath(); ctx.moveTo(xp, 20); ctx.lineTo(xp, 230); ctx.stroke(); }
-                }
-                for(var rd=10; rd<340; rd+=wl2){
-                    var rdp = rd + (phase*3)%wl2;
-                    ctx.beginPath(); ctx.arc(245, 125, rdp, -Math.PI/2.2, Math.PI/2.2); ctx.stroke();
-                }
-                ctx.fillStyle = '#fff'; ctx.fillText('Principio de Huygens: Difracción al atravesar abertura', 25, 238);
+
+                fase += 0.04 * f;
+                requestAnimationFrame(loop);
             }
-            requestAnimationFrame(animOnda);
-        }
-        animOnda();
+            loop();
+        })();
     </script>
 </body>
 </html>
