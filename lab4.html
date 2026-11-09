@@ -6,25 +6,30 @@
     <title>Práctica 4: Lanzamiento Horizontal — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .sim-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:16px; text-align:left; }
-        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-bottom:12px; }
-        .sim-ctrl { background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0; }
-        .sim-ctrl label { display:flex; justify-content:space-between; font-size:0.84rem; font-weight:600; margin-bottom:4px; }
-        .sim-ctrl input[type=range] { width:100%; min-height:34px; accent-color:#2563eb; }
-        .sim-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin-top:12px; }
-        .stat-card { background:#1e293b; color:#fff; padding:10px; border-radius:8px; text-align:center; }
-        .stat-card span { font-size:0.72rem; color:#93c5fd; text-transform:uppercase; display:block; }
-        canvas.sim-canvas { width:100%; max-width:600px; height:auto; background:#0f172a; border-radius:8px; display:block; margin:0 auto; }
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; font-size: 0.85rem; align-items: end; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .btn-accion { padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .botones-pdf a[download] { background-color: #2563eb !important; color: #ffffff !important; }
+        .botones-pdf button#btn-visor { background-color: #e2e8f0 !important; color: #1e293b !important; }
     </style>
 </head>
 <body>
+
     <nav class="barra-navegacion">
         <div class="barra-interior">
             <a href="laboratorios.html" class="enlace-volver">&larr; Volver a todos los laboratorios</a>
             <span class="identificador-nav">Práctica 4</span>
         </div>
     </nav>
+
     <main class="contenedor-principal">
+
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 4 · Laboratorio de Física UCV</div>
             <h1>Lanzamiento Horizontal</h1>
@@ -32,24 +37,30 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Simulador Interactivo: Proyección Horizontal</h2>
-            <p>Modifica la altura de la mesa y la rapidez de salida horizontal para observar la semiparábola de impacto.</p>
+            <h2>Simulador de Lanzamiento Horizontal desde Rampa</h2>
+            <p>Modifica la altura de la mesa (H) y la velocidad de salida horizontal (v₀) para observar el punto de impacto sobre el suelo y verificar la independencia de los movimientos.</p>
+
             <div class="sim-box">
-                <div class="sim-grid">
-                    <div class="sim-ctrl">
-                        <label><span>Altura de mesa ($H$):</span><span id="p4-h">0.90 m</span></label>
-                        <input type="range" id="in-h4" min="0.40" max="1.50" step="0.05" value="0.90" oninput="dibujarHoriz()">
+                <canvas id="cvHoriz" class="sim-canvas" width="600" height="290"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Altura de la Mesa (H): <span id="vH">1.20</span> m</label>
+                        <input type="range" id="sH" min="0.60" max="1.80" step="0.10" value="1.20">
                     </div>
-                    <div class="sim-ctrl">
-                        <label><span>Velocidad salida ($v_0$):</span><span id="p4-v">3.2 m/s</span></label>
-                        <input type="range" id="in-v4" min="1.0" max="6.0" step="0.2" value="3.2" oninput="dibujarHoriz()">
+                    <div class="ctrl">
+                        <label>Velocidad Horizontal (v₀): <span id="vV0">3.5</span> m/s</label>
+                        <input type="range" id="sV0" min="1.5" max="6.0" step="0.5" value="3.5">
+                    </div>
+                    <div class="ctrl">
+                        <button id="bLanzar" class="btn-accion">Lanzar Esfera</button>
                     </div>
                 </div>
-                <canvas id="cv4" class="sim-canvas" width="600" height="260"></canvas>
-                <div class="sim-stats">
-                    <div class="stat-card"><span>Tiempo de Caída</span><strong id="st4-t">0.429 s</strong></div>
-                    <div class="stat-card"><span>Alcance ($X$)</span><strong id="st4-x">1.37 m</strong></div>
-                    <div class="stat-card"><span>Rapidez Impacto</span><strong id="st4-vf">5.28 m/s</strong></div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mTiempo">0.495 s</div><div class="metrica-lbl">Tiempo de Caída (t)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mAlcance">1.73 m</div><div class="metrica-lbl">Alcance (x<sub>máx</sub>)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mVf">6.00 m/s</div><div class="metrica-lbl">Velocidad Impacto</div></div>
                 </div>
             </div>
         </section>
@@ -58,58 +69,87 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 4 Lanzamiento horizontal Andrés B.pdf</strong></p>
             <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-primario">Ver PDF dentro de la página</button>
-                <a href="Lab%204%20Lanzamiento%20horizontal%20Andr%C3%A9s%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%204%20Lanzamiento%20horizontal%20Andr%C3%A9s%20B.pdf" download class="btn-primario">Descargar PDF</a>
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+
     </main>
+
     <script>
-        var cv = document.getElementById('cv4'), ctx = cv.getContext('2d'), g = 9.8;
-        function dibujarHoriz() {
-            var H = parseFloat(document.getElementById('in-h4').value);
-            var v0 = parseFloat(document.getElementById('in-v4').value);
-            document.getElementById('p4-h').textContent = H.toFixed(2) + ' m';
-            document.getElementById('p4-v').textContent = v0.toFixed(1) + ' m/s';
-
-            var tc = Math.sqrt(2*H/g), X = v0 * tc, vf = Math.sqrt(v0*v0 + Math.pow(g*tc,2));
-            document.getElementById('st4-t').textContent = tc.toFixed(3) + ' s';
-            document.getElementById('st4-x').textContent = X.toFixed(2) + ' m';
-            document.getElementById('st4-vf').textContent = vf.toFixed(2) + ' m/s';
-
-            ctx.clearRect(0,0,600,260);
-            var ox = 90, oy = 225, sc = 115;
-            var topY = oy - H*sc;
-            // Mesa
-            ctx.fillStyle = '#334155'; ctx.fillRect(20, topY, ox-20, oy-topY);
-            ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(20, oy); ctx.lineTo(580, oy); ctx.stroke();
-            // Semiparábola
-            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
-            for(var t=0; t<=tc; t+=tc/40){
-                var px = ox + v0*t*sc, py = topY + 0.5*g*t*t*sc;
-                if(t===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-            }
-            ctx.stroke();
-            var impX = ox + X*sc;
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(impX, oy, 6, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.font = '12px sans-serif';
-            ctx.fillText('X = ' + X.toFixed(2) + ' m', Math.min(510, impX - 25), oy - 12);
-        }
-        dibujarHoriz();
-
         function mostrarVisor() {
-            var cont = document.getElementById('contenedor-visor'), frame = document.getElementById('iframe-pdf'), btn = document.getElementById('btn-visor');
-            var pdfFile = 'Lab%204%20Lanzamiento%20horizontal%20Andr%C3%A9s%20B.pdf';
+            var cont = document.getElementById('contenedor-visor');
+            var frame = document.getElementById('iframe-pdf');
+            var btn = document.getElementById('btn-visor');
+            var pdfUrl = 'Lab%204%20Lanzamiento%20horizontal%20Andr%C3%A9s%20B.pdf';
+            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
             if (cont.style.display === 'block') {
                 cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
             } else {
-                var absUrl = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + pdfFile;
-                frame.src = (window.innerWidth < 768) ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(absUrl) : pdfFile;
-                cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
             }
         }
+
+        (function() {
+            const cv = document.getElementById('cvHoriz'), ctx = cv.getContext('2d');
+            const sH = document.getElementById('sH'), sV0 = document.getElementById('sV0');
+            const g = 9.81;
+            let t = 0, activo = false;
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const H = parseFloat(sH.value), v0 = parseFloat(sV0.value);
+                const tc = Math.sqrt(2 * H / g);
+                const xmax = v0 * tc;
+                const vf = Math.sqrt(v0 * v0 + Math.pow(g * tc, 2));
+
+                document.getElementById('vH').textContent = H.toFixed(2);
+                document.getElementById('vV0').textContent = v0.toFixed(1);
+                document.getElementById('mTiempo').textContent = tc.toFixed(3) + ' s';
+                document.getElementById('mAlcance').textContent = xmax.toFixed(2) + ' m';
+                document.getElementById('mVf').textContent = vf.toFixed(2) + ' m/s';
+
+                const xBorde = 130, ySuelo = 255, esc = 105;
+                const yMesa = ySuelo - H * esc;
+
+                // Mesa y suelo
+                ctx.fillStyle = '#cbd5e1'; ctx.fillRect(30, yMesa, xBorde - 30, ySuelo - yMesa);
+                ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(30, yMesa); ctx.lineTo(xBorde, yMesa); ctx.lineTo(xBorde, ySuelo); ctx.lineTo(570, ySuelo); ctx.stroke();
+
+                // Semiparábola punteada
+                ctx.setLineDash([4, 4]); ctx.strokeStyle = '#2563eb';
+                ctx.beginPath(); ctx.moveTo(xBorde, yMesa);
+                for (let dt = 0; dt <= tc; dt += 0.02) {
+                    ctx.lineTo(xBorde + v0 * dt * esc, yMesa + 0.5 * g * dt * dt * esc);
+                }
+                ctx.stroke(); ctx.setLineDash([]);
+
+                const tAct = activo ? t : tc;
+                const ex = xBorde + v0 * tAct * esc;
+                const ey = Math.min(ySuelo - 8, yMesa + 0.5 * g * tAct * tAct * esc);
+
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath(); ctx.arc(ex, ey, 8, 0, Math.PI * 2); ctx.fill();
+            }
+
+            function loop() {
+                if (activo) {
+                    const H = parseFloat(sH.value), tc = Math.sqrt(2 * H / g);
+                    t += 0.018;
+                    if (t >= tc) { t = tc; activo = false; }
+                }
+                draw();
+                if (activo) requestAnimationFrame(loop);
+            }
+
+            document.getElementById('bLanzar').onclick = () => { t = 0; activo = true; requestAnimationFrame(loop); };
+            [sH, sV0].forEach(el => el.oninput = () => { activo = false; draw(); });
+            draw();
+        })();
     </script>
 </body>
 </html>
