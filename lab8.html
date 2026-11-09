@@ -20,22 +20,64 @@
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 8 · Laboratorio de Física UCV</div>
             <h1>Ondas y sonido</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Informe y video experimental de ondas con sonido.</p>
+            <p style="color: #4b5563; font-size: 0.95rem;">Estudio experimental de la propagación de ondas mecánicas y acústicas.</p>
         </header>
 
+        <!-- Sección de Demostración con Video Integrado -->
         <section class="bloque-contenido">
-            <h2>Video Experimental y Material Práctico</h2>
-            <p>Registro audiovisual de la experiencia de ondas y sonido, junto con esquema interactivo.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el reproductor del video experimental y el simulador de la <strong>Práctica 8 (Ondas y Sonido)</strong>.
+            <h2>Demostración Práctica / Registro en Video</h2>
+            <p>Registro audiovisual de la práctica de ondas y fenómenos acústicos:</p>
+            
+            <!-- Contenedor responsivo 16:9 para el reproductor -->
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid #d1d5db; background-color: #111827;">
+                <!-- Cuando subas el video a YouTube, reemplaza el ID_DEL_VIDEO en el src -->
+                <iframe 
+                    id="reproductor-lab8"
+                    src="https://www.youtube-nocookie.com/embed/VIDEO_ID" 
+                    title="Video demostrativo de Práctica 8"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <!-- Enlace alternativo de respaldo -->
+            <p style="margin-top: 1rem;">
+                <a id="enlace-video" href="https://youtu.be/VIDEO_ID" target="_blank" rel="noopener noreferrer" class="btn-secundario" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+                    <span>Ver video en YouTube a pantalla completa</span> &rarr;
+                </a>
+            </p>
+        </section>
+
+        <!-- Sección de Informe PDF (Sin el botón de pantalla completa, con visor interno y descarga directa) -->
+        <section class="bloque-contenido">
+            <h2>Informe en PDF</h2>
+            <p>Archivo: <strong>Lab 8 Ondas.pdf</strong></p>
+            <div class="botones-pdf">
+                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
+                <a href="Lab%208%20Ondas.pdf" download class="btn-primario">Descargar PDF</a>
+            </div>
+            <div id="contenedor-visor" class="visor-pdf-plegable">
+                <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
 
-        <section class="bloque-contenido">
-            <h2>Informe en PDF</h2>
-            <p>Este informe y su video experimental se encuentran actualmente en preparación.</p>
-        </section>
-
+        <script>
+            function mostrarVisor() {
+                var cont = document.getElementById('contenedor-visor');
+                var frame = document.getElementById('iframe-pdf');
+                var btn = document.getElementById('btn-visor');
+                if (cont.style.display === 'block') {
+                    cont.style.display = 'none';
+                    frame.src = '';
+                    btn.textContent = 'Ver PDF dentro de la página';
+                } else {
+                    frame.src = 'Lab%208%20Ondas.pdf';
+                    cont.style.display = 'block';
+                    btn.textContent = 'Ocultar visor PDF';
+                }
+            }
+        </script>
     </main>
 
 </body>
