@@ -78,20 +78,28 @@
 
     </main>
 
-    <script>
+   <script>
         function mostrarVisor() {
             var cont = document.getElementById('contenedor-visor');
             var frame = document.getElementById('iframe-pdf');
             var btn = document.getElementById('btn-visor');
-            var pdfUrl = 'Lab%201%20Calculo%20de%20la%20aceleraci%C3%B3n%20de%20la%20gravedad%20Andres%20B.pdf';
-            if (window.innerWidth < 768) { window.open(pdfUrl, '_blank'); return; }
+            
+            // Toma automáticamente la ruta del botón de descarga de esa misma página
+            var linkDescarga = document.querySelector('.botones-pdf a[download]').getAttribute('href');
+            var urlCompleta = 'https://adbd-bit.github.io/Laboratorio-general-de-fisica-Andres-B/' + linkDescarga;
+            var visorGoogle = 'https://docs.google.com/viewer?url=' + encodeURIComponent(urlCompleta) + '&embedded=true';
+
             if (cont.style.display === 'block') {
-                cont.style.display = 'none'; frame.src = ''; btn.textContent = 'Ver PDF dentro de la página';
+                cont.style.display = 'none';
+                frame.src = '';
+                btn.textContent = 'Ver PDF dentro de la página';
             } else {
-                frame.src = pdfUrl; cont.style.display = 'block'; btn.textContent = 'Ocultar visor PDF';
+                frame.src = visorGoogle;
+                cont.style.display = 'block';
+                btn.textContent = 'Ocultar visor PDF';
             }
         }
-
+       
         (function() {
             const cv = document.getElementById('cvCaida'), ctx = cv.getContext('2d');
             const sAlt = document.getElementById('sAlt');
