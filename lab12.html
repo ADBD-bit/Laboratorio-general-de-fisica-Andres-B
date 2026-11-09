@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 12: Determinación de la constante elástica de un resorte — Andrés Bohórquez</title>
+    <title>Práctica 12: Constante elástica de un resorte — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        .sim-box { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .sim-canvas { width: 100%; max-width: 600px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; display: block; }
+        .sim-controles { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; font-size: 0.85rem; align-items: end; }
+        .ctrl { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: #334155; }
+        .sim-metricas { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; }
+        .metrica { background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .metrica-val { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+        .metrica-lbl { font-size: 0.72rem; color: #64748b; text-transform: uppercase; }
+        .btn-accion { padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    </style>
 </head>
 <body>
 
@@ -24,10 +35,32 @@
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las gráficas, fotos del montaje o simulador interactivo de esta práctica.</p>
-            <div class="espacio-interactivo">
-                Aquí colocaremos el diseño interactivo, simulador o fotografías de la <strong>Práctica 12</strong>.
+            <h2>Simulador de Ley de Hooke y Oscilador Armónico</h2>
+            <p>Modifica la constante elástica del resorte (k) y la masa suspendida (m) para medir la elongación estática (&Delta;y) y observar el período de oscilación armónica (T).</p>
+
+            <div class="sim-box">
+                <canvas id="cvResorte" class="sim-canvas" width="600" height="310"></canvas>
+
+                <div class="sim-controles">
+                    <div class="ctrl">
+                        <label>Constante Elástica (k): <span id="vK">25</span> N/m</label>
+                        <input type="range" id="sK" min="15" max="60" step="1" value="25">
+                    </div>
+                    <div class="ctrl">
+                        <label>Masa Colgada (m): <span id="vM">0.50</span> kg</label>
+                        <input type="range" id="sM" min="0.10" max="1.20" step="0.05" value="0.50">
+                    </div>
+                    <div class="ctrl">
+                        <button id="bOscilar" class="btn-accion">Perturbar / Oscilar</button>
+                    </div>
+                </div>
+
+                <div class="sim-metricas">
+                    <div class="metrica"><div class="metrica-val" id="mPeso">4.91 N</div><div class="metrica-lbl">Fuerza Peso (mg)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mElong">19.6 cm</div><div class="metrica-lbl">Elongación (&Delta;y)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mPeriodo">0.89 s</div><div class="metrica-lbl">Período (T)</div></div>
+                    <div class="metrica"><div class="metrica-val" id="mFrec">1.13 Hz</div><div class="metrica-lbl">Frecuencia (f)</div></div>
+                </div>
             </div>
         </section>
 
@@ -35,37 +68,100 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 12 Determinación de la constante elástica de un resorte.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%2012%20Determinaci%C3%B3n%20de%20la%20constante%20el%C3%A1stica%20de%20un%20resorte.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%2012%20Determinaci%C3%B3n%20de%20la%20constante%20el%C3%A1stica%20de%20un%20resorte.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
-            </div>
-            <div id="contenedor-visor" class="visor-pdf-plegable">
-                <iframe id="iframe-pdf" src=""></iframe>
+                <a href="Lab%2012%20Determinaci%C3%B3n%20de%20la%20constante%20el%C3%A1stica%20de%20un%20resorte.pdf" class="btn-primario">Ver informe en PDF</a>
+                <a href="Lab%2012%20Determinaci%C3%B3n%20de%20la%20constante%20el%C3%A1stica%20de%20un%20resorte.pdf" download class="btn-secundario">Descargar PDF</a>
             </div>
         </section>
 
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                var pdfUrl = 'Lab%2012%20Determinaci%C3%B3n%20de%20la%20constante%20el%C3%A1stica%20de%20un%20resorte.pdf';
-                if (window.innerWidth < 768) {
-                    window.open(pdfUrl, '_blank');
-                    return;
-                }
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = pdfUrl;
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
 
+    <script>
+        (function() {
+            const cv = document.getElementById('cvResorte'), ctx = cv.getContext('2d');
+            const sK = document.getElementById('sK'), sM = document.getElementById('sM'), bOsc = document.getElementById('bOscilar');
+            let oscilando = false, t = 0;
+            const g = 9.81;
+
+            function datos() {
+                const k = parseFloat(sK.value), m = parseFloat(sM.value);
+                const F = m * g, dy = F / k; // metros
+                const omega = Math.sqrt(k / m), T = 2 * Math.PI / omega, f = 1 / T;
+                return { k, m, F, dy, omega, T, f };
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                const { k, m, F, dy, omega, T, f } = datos();
+
+                document.getElementById('vK').textContent = k;
+                document.getElementById('vM').textContent = m.toFixed(2);
+                document.getElementById('mPeso').textContent = F.toFixed(2) + ' N';
+                document.getElementById('mElong').textContent = (dy * 100).toFixed(1) + ' cm';
+                document.getElementById('mPeriodo').textContent = T.toFixed(2) + ' s';
+                document.getElementById('mFrec').textContent = f.toFixed(2) + ' Hz';
+
+                // Soporte superior
+                ctx.fillStyle = '#334155'; ctx.fillRect(100, 20, 180, 10);
+
+                // Regla graduada
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(90, 90); ctx.lineTo(90, 280); ctx.stroke();
+                ctx.fillStyle = '#475569'; ctx.font = '11px sans-serif';
+                ctx.fillText('L₀ (0 cm)', 30, 94);
+
+                // Posición natural L0 = 90px
+                const yNat = 90;
+                ctx.setLineDash([4, 4]); ctx.strokeStyle = '#10b981';
+                ctx.beginPath(); ctx.moveTo(90, yNat); ctx.lineTo(290, yNat); ctx.stroke();
+
+                // Posición de equilibrio estático
+                const pxPorMetro = 160;
+                const yEq = yNat + dy * pxPorMetro;
+                ctx.strokeStyle = '#2563eb';
+                ctx.beginPath(); ctx.moveTo(90, yEq); ctx.lineTo(290, yEq); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#2563eb';
+                ctx.fillText('Equilibrio (\u0394y = ' + (dy * 100).toFixed(1) + ' cm)', 295, yEq + 4);
+
+                // Posición instantánea con oscilación amortiguada suave
+                const amp = oscilando ? 26 * Math.exp(-0.15 * t) * Math.cos(omega * t) : 0;
+                const yActual = yEq + amp;
+
+                // Dibujo de espiras del resorte
+                const espiras = 12, xCentro = 190, yTop = 30;
+                const paso = (yActual - yTop - 15) / espiras;
+                ctx.strokeStyle = '#475569'; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(xCentro, yTop);
+                for (let i = 0; i < espiras; i++) {
+                    const dir = (i % 2 === 0) ? 18 : -18;
+                    ctx.lineTo(xCentro + dir, yTop + (i + 0.5) * paso);
+                }
+                ctx.lineTo(xCentro, yActual - 15);
+                ctx.stroke();
+
+                // Bloque de masa
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(xCentro - 22, yActual - 15, 44, 34);
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(m.toFixed(2) + 'kg', xCentro - 18, yActual + 5);
+            }
+
+            function loop() {
+                if (oscilando) {
+                    t += 0.03;
+                    if (t > 20) { oscilando = false; t = 0; }
+                }
+                draw();
+                if (oscilando) requestAnimationFrame(loop);
+            }
+
+            bOsc.onclick = () => {
+                t = 0;
+                if (!oscilando) { oscilando = true; requestAnimationFrame(loop); }
+            };
+            [sK, sM].forEach(el => el.oninput = () => { oscilando = false; t = 0; draw(); });
+            draw();
+        })();
+    </script>
 </body>
 </html>
