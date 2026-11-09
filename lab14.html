@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Práctica 14: Cálculo de la densidad del aceite — Andrés Bohórquez</title>
+    <title>Práctica 14: Densidad de Fluido Inmiscible — Andrés Bohórquez</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -19,46 +19,34 @@
 
         <header class="cabecera-lab-individual">
             <div class="etiqueta">Práctica 14 · Laboratorio de Física UCV</div>
-            <h1>Cálculo de la densidad del aceite</h1>
-            <p style="color: #4b5563; font-size: 0.95rem;">Determinación experimental de la densidad de un fluido mediante relación masa-volumen.</p>
+            <h1>Determinación Experimental de la Densidad de un Fluido Inmiscible Mediante Tubo en U</h1>
+            <p style="color: #4b5563; font-size: 0.95rem;">Aplicación del Principio Fundamental de la Hidrostática.</p>
         </header>
 
         <section class="bloque-contenido">
-            <h2>Material práctico / Simulación / Esquema</h2>
-            <p>Espacio dedicado a las tablas de mediciones, gráficas masa vs. volumen o simulador de fluidos.</p>
+            <blockquote style="border-left: 4px solid #2563eb; padding-left: 14px; font-style: italic; color: #475569; margin-bottom: 16px;">
+                "El agua en un tubo en U encuentra su nivel; la presión ejercida en cualquier punto de un fluido en equilibrio se transmite por igual en todas las direcciones."
+                <div style="font-weight: 600; font-style: normal; margin-top: 4px; color: #1e293b;">— Blaise Pascal</div>
+            </blockquote>
+            <h2>Resumen Experimental</h2>
+            <p style="text-align: justify;">
+                Determinación experimental de la densidad del aceite de soya comercial (marca Portumesa) mediante la aplicación del Principio Fundamental de la Hidrostática en un manómetro de tubo en U, empleando agua destilada como fluido de referencia (&rho;<sub>agua</sub> = 1,00 g/cm³). El montaje empleó una manguera transparente graduada sobre soporte milimetrado, midiéndose una columna de aceite h₁ = 18,5 cm y un desnivel en ramas superiores &Delta;h = 1,7 cm para evaluar la igualdad de presiones hidrostáticas en la línea isobárica de referencia.
+            </p>
+        </section>
+
+        <section class="bloque-contenido">
+            <h2>Simulador del Manómetro de Tubo en U</h2>
+            <p>Cálculo interactivo de densidades en función de las alturas de las columnas de fluido.</p>
             <div class="espacio-interactivo">
-                Aquí colocaremos el esquema interactivo y cálculos de la <strong>Práctica 14 (Densidad del Aceite)</strong>.
+                Aquí montaremos el simulador interactivo de balance de presiones en el tubo en U.
             </div>
         </section>
 
         <section class="bloque-contenido">
             <h2>Informe en PDF</h2>
-            <p>Archivo: <strong>Lab 14 Calculo de la densidad del aceite.pdf</strong></p>
-            <div class="botones-pdf">
-                <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%2014%20Calculo%20de%20la%20densidad%20del%20aceite.pdf" download class="btn-primario">Descargar PDF</a>
-            </div>
-            <div id="contenedor-visor" class="visor-pdf-plegable">
-                <iframe id="iframe-pdf" src=""></iframe>
-            </div>
+            <p>Estado del documento: <strong>Cálculos experimentales completados, memoria en edición.</strong></p>
         </section>
 
-        <script>
-            function mostrarVisor() {
-                var cont = document.getElementById('contenedor-visor');
-                var frame = document.getElementById('iframe-pdf');
-                var btn = document.getElementById('btn-visor');
-                if (cont.style.display === 'block') {
-                    cont.style.display = 'none';
-                    frame.src = '';
-                    btn.textContent = 'Ver PDF dentro de la página';
-                } else {
-                    frame.src = 'Lab%2014%20Calculo%20de%20la%20densidad%20del%20aceite.pdf';
-                    cont.style.display = 'block';
-                    btn.textContent = 'Ocultar visor PDF';
-                }
-            }
-        </script>
     </main>
 
 </body>
