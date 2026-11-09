@@ -35,25 +35,31 @@
             <h2>Informe en PDF</h2>
             <p>Archivo: <strong>Lab 7 Determinacion Calor Especifico del Cobre Andres B.pdf</strong></p>
             <div class="botones-pdf">
-                <a href="Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf" target="_blank" class="btn-primario">Abrir PDF en pantalla completa</a>
+                <a href="Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf" target="_blank" rel="noopener noreferrer" class="btn-primario">Abrir PDF en pantalla completa</a>
                 <button onclick="mostrarVisor()" id="btn-visor" class="btn-secundario">Ver PDF dentro de la página</button>
-                <a href="Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf" download class="btn-secundario">Descargar PDF</a>
+                <a href="Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf" target="_blank" rel="noopener noreferrer" download class="btn-secundario">Descargar PDF</a>
             </div>
             <div id="contenedor-visor" class="visor-pdf-plegable">
                 <iframe id="iframe-pdf" src=""></iframe>
             </div>
         </section>
+
         <script>
             function mostrarVisor() {
                 var cont = document.getElementById('contenedor-visor');
                 var frame = document.getElementById('iframe-pdf');
                 var btn = document.getElementById('btn-visor');
+                var pdfUrl = 'Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf';
+                if (window.innerWidth < 768) {
+                    window.open(pdfUrl, '_blank');
+                    return;
+                }
                 if (cont.style.display === 'block') {
                     cont.style.display = 'none';
                     frame.src = '';
                     btn.textContent = 'Ver PDF dentro de la página';
                 } else {
-                    frame.src = 'Lab%207%20Determinacion%20Calor%20Especifico%20del%20Cobre%20Andres%20B.pdf';
+                    frame.src = pdfUrl;
                     cont.style.display = 'block';
                     btn.textContent = 'Ocultar visor PDF';
                 }
